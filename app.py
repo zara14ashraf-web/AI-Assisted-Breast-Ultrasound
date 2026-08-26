@@ -1245,6 +1245,10 @@ if mode == "Upload Ultrasound":
             "png",
             "jpg",
             "jpeg",
+            "webp",
+            "bmp",
+            "tif",
+            "tiff",
         ],
         label_visibility="collapsed",
         help=(
