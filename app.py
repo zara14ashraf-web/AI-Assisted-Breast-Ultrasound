@@ -1159,7 +1159,7 @@ with st.expander(
         "The visual explanation represents model attention and "
         "does not constitute definitive lesion segmentation."
     )
-    # ============================================================
+   # ============================================================
 # THINGS THAT WILL HELP YOU UNDERSTAND THIS APP BETTER
 # ============================================================
 
@@ -1173,177 +1173,47 @@ with st.expander(
         "visual explanations, and key terms you may see."
     )
 
-    guide1, guide2 = st.columns(
-        2,
-        gap="large",
+    st.markdown("### 🧠 AI Prediction")
+
+    st.write(
+        "The result selected by the trained AI model based "
+        "on visual patterns learned from ultrasound images."
     )
 
-    with guide1:
+    st.markdown("### 📊 Probability")
 
-        st.markdown(
-            """
-            <div style="
-                background: #f8fbfc;
-                border: 1px solid #e2eaed;
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 0.9rem;
-            ">
-                <div style="
-                    font-size: 1rem;
-                    font-weight: 750;
-                    color: #173f4d;
-                    margin-bottom: 0.35rem;
-                ">
-                    🧠 AI Prediction
-                </div>
+    st.write(
+        "Shows how the model's output is distributed between "
+        "Benign and Malignant. These values should not be "
+        "interpreted as a patient's actual probability of disease."
+    )
 
-                <div style="
-                    font-size: 0.82rem;
-                    color: #536870;
-                    line-height: 1.55;
-                ">
-                    The result selected by the trained AI model
-                    based on visual patterns learned from
-                    ultrasound images.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown("---")
 
-        st.markdown(
-            """
-            <div style="
-                background: #f8fbfc;
-                border: 1px solid #e2eaed;
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 0.9rem;
-            ">
-                <div style="
-                    font-size: 1rem;
-                    font-weight: 750;
-                    color: #173f4d;
-                    margin-bottom: 0.35rem;
-                ">
-                    📊 Probability
-                </div>
+    st.markdown("### 📍 Model Separation")
 
-                <div style="
-                    font-size: 0.82rem;
-                    color: #536870;
-                    line-height: 1.55;
-                ">
-                    Shows how the model's output is distributed
-                    between Benign and Malignant. These values
-                    should not be interpreted as a patient's
-                    actual probability of disease.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.write(
+        "Indicates how distinctly the model's outputs differ "
+        "between the two classes. A smaller difference means "
+        "the model's outputs are closer together."
+    )
 
-    with guide2:
+    st.markdown("### 🔬 Grad-CAM++")
 
-        st.markdown(
-            """
-            <div style="
-                background: #f8fbfc;
-                border: 1px solid #e2eaed;
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 0.9rem;
-            ">
-                <div style="
-                    font-size: 1rem;
-                    font-weight: 750;
-                    color: #173f4d;
-                    margin-bottom: 0.35rem;
-                ">
-                    📍 Model Separation
-                </div>
+    st.write(
+        "Creates a heatmap showing image regions associated "
+        "with the model's selected prediction. It represents "
+        "model attention, not a definitive lesion boundary."
+    )
 
-                <div style="
-                    font-size: 0.82rem;
-                    color: #536870;
-                    line-height: 1.55;
-                ">
-                    Indicates how distinctly the model's outputs
-                    differ between the two classes. A smaller
-                    difference means the model's outputs are
-                    closer together.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown("---")
 
-        st.markdown(
-            """
-            <div style="
-                background: #f8fbfc;
-                border: 1px solid #e2eaed;
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 0.9rem;
-            ">
-                <div style="
-                    font-size: 1rem;
-                    font-weight: 750;
-                    color: #173f4d;
-                    margin-bottom: 0.35rem;
-                ">
-                    🔬 Grad-CAM++
-                </div>
+    st.markdown("### 🎯 Reference Lesion Mask")
 
-                <div style="
-                    font-size: 0.82rem;
-                    color: #536870;
-                    line-height: 1.55;
-                ">
-                    Creates a heatmap showing image regions
-                    associated with the model's selected
-                    prediction. It represents model attention,
-                    not a definitive lesion boundary.
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        """
-        <div style="
-            background: #fbfaf7;
-            border: 1px solid #e8e1d5;
-            border-radius: 12px;
-            padding: 0.9rem 1rem;
-            margin-top: 0.15rem;
-        ">
-            <div style="
-                font-size: 0.95rem;
-                font-weight: 750;
-                color: #5f5038;
-                margin-bottom: 0.3rem;
-            ">
-                🎯 Reference Lesion Mask
-            </div>
-
-            <div style="
-                font-size: 0.8rem;
-                color: #6d6253;
-                line-height: 1.55;
-            ">
-                For representative cases, the reference mask
-                shows the annotated lesion region provided
-                for visual comparison. It is separate from
-                the AI-generated Grad-CAM++ attention.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.write(
+        "For representative cases, the reference mask shows "
+        "the annotated lesion region provided for visual comparison. "
+        "It is separate from the AI-generated Grad-CAM++ attention."
     )
 # ============================================================
 # WHY WAS THIS DEVELOPED?
