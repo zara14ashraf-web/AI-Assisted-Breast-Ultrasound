@@ -1531,9 +1531,9 @@ else:
     )
 
     st.caption(
-    "Reference lesion masks are provided for visual comparison "
-    "only and do not represent the model's prediction."
-)
+                "Reference lesion masks are provided for visual comparison "
+                "only and do not represent the model's prediction."
+        )
 
     sample_cols = st.columns(
         4,
