@@ -814,29 +814,31 @@ except Exception as error:
 
 with st.sidebar:
 
-   # --------------------------------------------------------
-# BRANDING
-# --------------------------------------------------------
+    # --------------------------------------------------------
+    # BRANDING
+    # --------------------------------------------------------
 
-st.markdown(
-    "## 🩺 Breast Ultrasound AI"
-)
+    st.markdown(
+        "## 🩺 Breast Ultrasound AI"
+    )
 
-st.caption(
-    "AI-Assisted Imaging Analysis"
-)
+    st.caption(
+        "AI-Assisted Imaging Analysis"
+    )
 
-st.markdown(
-    "**Developed by Zara Ashraf**"
-)
+    st.markdown(
+        "**Developed by Zara Ashraf**"
+    )
 
-st.divider()
+    st.divider()
 
     # --------------------------------------------------------
     # QUICK OVERVIEW
     # --------------------------------------------------------
 
-    st.markdown("### 🔍 System Overview")
+    st.markdown(
+        "### 🔍 System Overview"
+    )
 
     st.write(
         "This research prototype uses deep learning to "
@@ -859,8 +861,8 @@ st.divider()
         )
 
         st.caption(
-            "A convolutional neural network used for "
-            "binary breast lesion classification."
+            "A deep learning model used for binary "
+            "breast lesion classification."
         )
 
         st.write(
@@ -872,7 +874,7 @@ st.divider()
         )
 
     # --------------------------------------------------------
-    # EXPLAINABILITY
+    # EXPLAINABLE AI
     # --------------------------------------------------------
 
     with st.expander(
@@ -885,18 +887,18 @@ st.divider()
         )
 
         st.write(
-            "The model's prediction is accompanied by a "
-            "visual attention map highlighting image regions "
-            "that contributed to the selected prediction."
+            "Provides a visual representation of image "
+            "regions associated with the model's selected "
+            "prediction."
         )
 
         st.caption(
-            "Attention maps indicate model focus and should "
-            "not be interpreted as definitive lesion segmentation."
+            "Model attention should not be interpreted as "
+            "definitive lesion segmentation."
         )
 
     # --------------------------------------------------------
-    # WORKFLOW
+    # HOW IT WORKS
     # --------------------------------------------------------
 
     with st.expander(
@@ -912,12 +914,12 @@ st.divider()
 
             **02 — Analyze**
 
-            The EfficientNet-B3 model processes the image.
+            The AI model processes the image.
 
             **03 — Prediction**
 
             The system provides a benign or malignant output
-            with the model's probability distribution.
+            with its probability distribution.
 
             **04 — Explanation**
 
@@ -927,7 +929,7 @@ st.divider()
         )
 
     # --------------------------------------------------------
-    # INTERPRETING RESULTS
+    # UNDERSTANDING THE OUTPUT
     # --------------------------------------------------------
 
     with st.expander(
