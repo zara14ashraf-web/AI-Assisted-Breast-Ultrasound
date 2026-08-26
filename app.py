@@ -1943,7 +1943,17 @@ else:
                 benign_probability,
                 malignant_probability,
             )
-
+            st.download_button(
+            label="📄 Download Analysis Report",
+            data=create_analysis_report(
+                prediction,
+                benign_probability,
+                malignant_probability,
+            ),
+            file_name=f"{sample['id']}_analysis_report.txt",
+            mime="text/plain",
+            use_container_width=True,
+        )
     with reference_col:
 
         st.subheader(
