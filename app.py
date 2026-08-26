@@ -1097,15 +1097,14 @@ st.divider()
 # DISCLAIMER
 # ============================================================
 
-st.info(
+st.warning(
     """
     **Research & Educational Prototype**
 
-    This application is developed for research and educational
-    demonstration only. It is not a medical device and should
-    not be used to diagnose, exclude, or guide treatment of
-    breast disease. AI predictions may be incorrect and should
-    not replace assessment by a qualified healthcare professional.
+    This application is designed for research and educational
+    purposes only. AI predictions may be incorrect and should
+    not be used as a standalone basis for diagnosis or treatment.
+    Always rely on assessment by a qualified healthcare professional.
     """
 )
 
