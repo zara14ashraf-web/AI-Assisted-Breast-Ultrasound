@@ -1,3 +1,8 @@
+# ============================================================
+# AI-ASSISTED BREAST ULTRASOUND ANALYSIS
+# app.py
+# ============================================================
+
 import os
 import requests
 
@@ -78,7 +83,7 @@ CHECKPOINT_PATH = os.path.join(
 
 
 # ============================================================
-# FINAL HUGGING FACE CHECKPOINT
+# HUGGING FACE CHECKPOINT
 # ============================================================
 
 HF_CHECKPOINT_URL = (
@@ -98,16 +103,12 @@ MODEL_NAME = "Shared Dual EfficientNet-B3"
 
 IMAGE_SIZE = 300
 
-# Final decision threshold used for deployment.
 THRESHOLD = 0.52
 
-# Lesion-focused crop margin.
 CROP_MARGIN = 0.25
 
-# Final Grad-CAM++ layer selected from layer-wise evaluation.
 GRADCAM_LAYER_INDEX = 8
 
-# Final Grad-CAM++ visualization threshold.
 GRADCAM_THRESHOLD = 0.40
 
 MEAN = [
@@ -124,7 +125,7 @@ STD = [
 
 
 # ============================================================
-# FINAL VERIFIED SAMPLE CASES
+# VERIFIED SAMPLE CASES
 # ============================================================
 
 SAMPLES = {
@@ -134,7 +135,6 @@ SAMPLES = {
         "image": "bus_0835-s.png",
         "mask": "bus_0835-s_MASK.png",
         "label": "Benign",
-        "histology": "Dataset reference",
     },
 
     "Sample 02 — Benign": {
@@ -142,7 +142,6 @@ SAMPLES = {
         "image": "bus_0090-l.png",
         "mask": "bus_0090-l_MASK.png",
         "label": "Benign",
-        "histology": "Dataset reference",
     },
 
     "Sample 03 — Malignant": {
@@ -150,7 +149,6 @@ SAMPLES = {
         "image": "bus_0650-r.png",
         "mask": "bus_0650-r_MASK.png",
         "label": "Malignant",
-        "histology": "Dataset reference",
     },
 
     "Sample 04 — Malignant": {
@@ -158,7 +156,6 @@ SAMPLES = {
         "image": "bus_0245-r.png",
         "mask": "bus_0245-r_MASK.png",
         "label": "Malignant",
-        "histology": "Dataset reference",
     },
 }
 
@@ -217,9 +214,9 @@ def load_model():
 
     download_checkpoint()
 
-    model = SharedDualEfficientNetB3(
-        num_classes=2
-    )
+    # IMPORTANT:
+    # This matches the verified model.py architecture.
+    model = SharedDualEfficientNetB3()
 
     checkpoint = torch.load(
         CHECKPOINT_PATH,
@@ -499,10 +496,6 @@ class GradCAMPlusPlus:
                 "were not captured."
             )
 
-        # ----------------------------------------------------
-        # GRAD-CAM++ WEIGHTS
-        # ----------------------------------------------------
-
         gradients_2 = gradients.pow(2)
 
         gradients_3 = gradients.pow(3)
@@ -595,7 +588,7 @@ class GradCAMPlusPlus:
 
 
 # ============================================================
-# GET FINAL GRAD-CAM++ TARGET LAYER
+# GRAD-CAM TARGET LAYER
 # ============================================================
 
 def get_gradcam_target_layer(
@@ -645,7 +638,7 @@ def generate_gradcampp(
 
 
 # ============================================================
-# GRAD-CAM++ OVERLAY
+# GRAD-CAM OVERLAY
 # ============================================================
 
 def create_gradcam_overlay(
@@ -908,7 +901,6 @@ def generate_automatic_crop(
         0
     ).to(device)
 
-    # Initial full-image prediction.
     with torch.no_grad():
 
         logits = model(
@@ -927,7 +919,6 @@ def generate_automatic_crop(
         ).item()
     )
 
-    # Generate attention map.
     cam = generate_gradcampp(
         model,
         full_tensor,
@@ -1347,20 +1338,12 @@ if mode == "Upload Ultrasound":
                     "Analyzing ultrasound..."
                 ):
 
-                    # ------------------------------------
-                    # AUTOMATIC ATTENTION CROP
-                    # ------------------------------------
-
                     crop_image = (
                         generate_automatic_crop(
                             model,
                             image,
                         )
                     )
-
-                    # ------------------------------------
-                    # FINAL PREDICTION
-                    # ------------------------------------
 
                     (
                         prediction,
@@ -1380,10 +1363,6 @@ if mode == "Upload Ultrasound":
                         else 0
                     )
 
-                    # ------------------------------------
-                    # FINAL GRAD-CAM++
-                    # ------------------------------------
-
                     cam = generate_gradcampp(
                         model,
                         full_tensor,
@@ -1398,9 +1377,9 @@ if mode == "Upload Ultrasound":
                         )
                     )
 
-                # ========================================
+                # ====================================================
                 # AI ASSESSMENT
-                # ========================================
+                # ====================================================
 
                 st.divider()
 
@@ -1500,9 +1479,9 @@ if mode == "Upload Ultrasound":
                         "or clinical certainty."
                     )
 
-                # ========================================
+                # ====================================================
                 # VISUAL EXPLANATION
-                # ========================================
+                # ====================================================
 
                 st.write("")
 
@@ -1621,9 +1600,9 @@ else:
         selected_sample_name
     ]
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # LOAD SAMPLE FILES
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
     image_path = os.path.join(
         SAMPLES_DIR,
@@ -1663,9 +1642,9 @@ else:
         mask_path
     ).convert("L")
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # SAMPLE LESION VIEW
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
     mask_array = np.array(
         mask
@@ -1704,9 +1683,9 @@ else:
 
         crop_image = image.copy()
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # MODEL ANALYSIS
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
     try:
 
@@ -1755,9 +1734,9 @@ else:
 
         st.stop()
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # CASE HEADER
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
     st.write("")
 
@@ -1769,9 +1748,9 @@ else:
         f"Case ID: `{sample['id']}`"
     )
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # VISUAL EXPLANATION
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
     st.write("")
 
@@ -1827,9 +1806,9 @@ else:
         "interpreted as a definitive segmentation."
     )
 
-    # --------------------------------------------------------
-    # AI ASSESSMENT + REFERENCE
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
+    # AI ASSESSMENT
+    # ------------------------------------------------------------
 
     st.write("")
 
