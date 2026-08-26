@@ -1,27 +1,14 @@
-import torch
-import torch.nn.functional as F
-from PIL import Image
-from torchvision import transforms
-
-from model import load_model
-
-# ============================================================
-# AI-ASSISTED BREAST ULTRASOUND ANALYSIS
-# app.py
-# ============================================================
-
 import os
-import requests
 
 import numpy as np
+import streamlit as st
 import torch
 import torch.nn.functional as F
-import streamlit as st
 
 from PIL import Image
 from torchvision import transforms
 
-from model import SharedDualEfficientNetB3
+from model import EfficientNetB3Classifier
 
 
 # ============================================================
@@ -83,6 +70,7 @@ SAMPLES_DIR = os.path.join(
     "samples",
 )
 
+# Today's single EfficientNet-B3 checkpoint
 CHECKPOINT_PATH = os.path.join(
     BASE_DIR,
     "Model_Best.pth",
@@ -90,41 +78,15 @@ CHECKPOINT_PATH = os.path.join(
 
 
 # ============================================================
-# HUGGING FACE CHECKPOINT
-# ============================================================
-
-HF_CHECKPOINT_URL = (
-    "https://huggingface.co/"
-    "zara14ashraf/"
-    "busbra-dual-effnet-b3-final/"
-    "resolve/main/"
-    "Model_Best.pth"
-)
-
-
-# ============================================================
 # MODEL CONFIGURATION
 # ============================================================
 
-MODEL_NAME = "Shared Dual EfficientNet-B3"
+MODEL_NAME = "EfficientNet-B3"
 
 IMAGE_SIZE = 300
 
-# Decision threshold used by the deployed model.
+# Decision threshold
 THRESHOLD = 0.52
-
-# Lesion crop margin.
-CROP_MARGIN = 0.25
-
-# Grad-CAM++ target layer.
-GRADCAM_LAYER_INDEX = 8
-
-# Threshold used when generating an
-# attention-based automatic crop.
-GRADCAM_THRESHOLD = 0.40
-
-# Padding around CAM-derived region.
-CAM_PADDING = 0.20
 
 MEAN = [
     0.485,
@@ -187,108 +149,6 @@ device = torch.device(
 
 
 # ============================================================
-# CHECKPOINT DOWNLOAD
-# ============================================================
-
-def download_checkpoint():
-
-    if os.path.exists(CHECKPOINT_PATH):
-        return
-
-    with st.spinner(
-        "Preparing the trained AI model for first use..."
-    ):
-
-        response = requests.get(
-            HF_CHECKPOINT_URL,
-            stream=True,
-            timeout=300,
-        )
-
-        response.raise_for_status()
-
-        with open(
-            CHECKPOINT_PATH,
-            "wb",
-        ) as file:
-
-            for chunk in response.iter_content(
-                chunk_size=1024 * 1024
-            ):
-
-                if chunk:
-                    file.write(chunk)
-
-
-# ============================================================
-# CHECKPOINT STATE DICT
-# ============================================================
-
-def extract_state_dict(checkpoint):
-
-    if not isinstance(checkpoint, dict):
-        raise ValueError(
-            "Unexpected checkpoint format."
-        )
-
-    if "state_dict" in checkpoint:
-
-        state_dict = checkpoint["state_dict"]
-
-    elif "model_state_dict" in checkpoint:
-
-        state_dict = checkpoint["model_state_dict"]
-
-    else:
-
-        state_dict = checkpoint
-
-    cleaned_state_dict = {}
-
-    for key, value in state_dict.items():
-
-        if key.startswith("module."):
-            key = key[7:]
-
-        cleaned_state_dict[key] = value
-
-    return cleaned_state_dict
-
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
-@st.cache_resource
-def load_model():
-
-    download_checkpoint()
-
-    model = SharedDualEfficientNetB3()
-
-    checkpoint = torch.load(
-        CHECKPOINT_PATH,
-        map_location=device,
-        weights_only=False,
-    )
-
-    state_dict = extract_state_dict(
-        checkpoint
-    )
-
-    model.load_state_dict(
-        state_dict,
-        strict=True,
-    )
-
-    model = model.to(device)
-
-    model.eval()
-
-    return model
-
-
-# ============================================================
 # IMAGE TRANSFORM
 # ============================================================
 
@@ -312,7 +172,74 @@ transform = transforms.Compose(
 
 
 # ============================================================
-# IMAGE → MODEL TENSOR
+# LOAD MODEL
+# ============================================================
+
+@st.cache_resource
+def load_trained_model():
+
+    if not os.path.exists(CHECKPOINT_PATH):
+
+        raise FileNotFoundError(
+            f"Model checkpoint not found:\n{CHECKPOINT_PATH}"
+        )
+
+    model = EfficientNetB3Classifier()
+
+    checkpoint = torch.load(
+        CHECKPOINT_PATH,
+        map_location=device,
+        weights_only=False,
+    )
+
+    if isinstance(checkpoint, dict):
+
+        if "model_state_dict" in checkpoint:
+
+            state_dict = checkpoint[
+                "model_state_dict"
+            ]
+
+        elif "state_dict" in checkpoint:
+
+            state_dict = checkpoint[
+                "state_dict"
+            ]
+
+        else:
+
+            state_dict = checkpoint
+
+    else:
+
+        raise ValueError(
+            "Unexpected checkpoint format."
+        )
+
+    cleaned_state_dict = {}
+
+    for key, value in state_dict.items():
+
+        if key.startswith("module."):
+            key = key[7:]
+
+        cleaned_state_dict[key] = value
+
+    # Strict loading ensures that the deployed
+    # architecture is exactly the trained architecture.
+    model.load_state_dict(
+        cleaned_state_dict,
+        strict=True,
+    )
+
+    model = model.to(device)
+    model.eval()
+
+    return model
+
+
+# ============================================================
+# IMAGE → TENSOR
 # ============================================================
 
 def image_to_tensor(image):
@@ -321,65 +248,6 @@ def image_to_tensor(image):
         transform(image)
         .unsqueeze(0)
         .to(device)
-    )
-
-
-# ============================================================
-# LESION CROP
-# ============================================================
-
-def make_lesion_crop(
-    image,
-    bbox,
-    margin=CROP_MARGIN,
-):
-
-    x, y, width, height = [
-        int(v)
-        for v in bbox
-    ]
-
-    image_width, image_height = image.size
-
-    pad_x = int(
-        width * margin
-    )
-
-    pad_y = int(
-        height * margin
-    )
-
-    x1 = max(
-        0,
-        x - pad_x,
-    )
-
-    y1 = max(
-        0,
-        y - pad_y,
-    )
-
-    x2 = min(
-        image_width,
-        x + width + pad_x,
-    )
-
-    y2 = min(
-        image_height,
-        y + height + pad_y,
-    )
-
-    if x2 <= x1 or y2 <= y1:
-
-        return image.copy()
-
-    return image.crop(
-        (
-            x1,
-            y1,
-            x2,
-            y2,
-        )
     )
 
 
@@ -398,7 +266,6 @@ def bbox_from_mask(mask):
     )
 
     if not mask_binary.any():
-
         return None
 
     ys, xs = np.where(
@@ -452,7 +319,6 @@ def create_mask_overlay(
     )
 
     if not mask_binary.any():
-
         return image
 
     overlay = image_array.copy()
@@ -539,8 +405,7 @@ class GradCAMPlusPlus:
 
     def generate(
         self,
-        full_tensor,
-        crop_tensor,
+        image_tensor,
         target_class,
     ):
 
@@ -549,8 +414,7 @@ class GradCAMPlusPlus:
         )
 
         logits = self.model(
-            full_tensor,
-            crop_tensor,
+            image_tensor
         )
 
         score = logits[
@@ -653,7 +517,6 @@ class GradCAMPlusPlus:
         maximum = cam.max()
 
         if maximum > 0:
-
             cam /= maximum
 
         return cam
@@ -672,9 +535,8 @@ def get_gradcam_target_layer(
     model,
 ):
 
-    return model.full_branch.features[
-        GRADCAM_LAYER_INDEX
-    ]
+    # Final convolutional feature block
+    return model.features[8]
 
 
 # ============================================================
@@ -683,8 +545,7 @@ def get_gradcam_target_layer(
 
 def generate_gradcampp(
     model,
-    full_tensor,
-    crop_tensor,
+    image_tensor,
     predicted_class,
 ):
 
@@ -702,8 +563,7 @@ def generate_gradcampp(
     try:
 
         cam = gradcam.generate(
-            full_tensor,
-            crop_tensor,
+            image_tensor,
             predicted_class,
         )
 
@@ -792,22 +652,16 @@ def create_gradcam_overlay(
 def predict(
     model,
     image,
-    crop_image,
 ):
 
-    full_tensor = image_to_tensor(
+    image_tensor = image_to_tensor(
         image
-    )
-
-    crop_tensor = image_to_tensor(
-        crop_image
     )
 
     with torch.no_grad():
 
         logits = model(
-            full_tensor,
-            crop_tensor,
+            image_tensor
         )
 
         probabilities = torch.softmax(
@@ -840,222 +694,12 @@ def predict(
         "predicted_class": predicted_class,
         "benign_probability": benign_probability,
         "malignant_probability": malignant_probability,
-        "full_tensor": full_tensor,
-        "crop_tensor": crop_tensor,
+        "image_tensor": image_tensor,
     }
 
 
 # ============================================================
-# AUTOMATIC CAM BBOX
-# ============================================================
-
-def bbox_from_cam(
-    cam,
-    original_size,
-    threshold_ratio=GRADCAM_THRESHOLD,
-    padding_ratio=CAM_PADDING,
-):
-
-    image_width, image_height = (
-        original_size
-    )
-
-    maximum = float(
-        cam.max()
-    )
-
-    if maximum <= 0:
-
-        return [
-            0,
-            0,
-            image_width,
-            image_height,
-        ]
-
-    threshold = (
-        maximum
-        * threshold_ratio
-    )
-
-    active = (
-        cam >= threshold
-    )
-
-    if not active.any():
-
-        return [
-            0,
-            0,
-            image_width,
-            image_height,
-        ]
-
-    ys, xs = np.where(
-        active
-    )
-
-    x1 = int(xs.min())
-    x2 = int(xs.max())
-
-    y1 = int(ys.min())
-    y2 = int(ys.max())
-
-    roi_width = (
-        x2 - x1 + 1
-    )
-
-    roi_height = (
-        y2 - y1 + 1
-    )
-
-    pad_x = int(
-        roi_width
-        * padding_ratio
-    )
-
-    pad_y = int(
-        roi_height
-        * padding_ratio
-    )
-
-    x1 -= pad_x
-    y1 -= pad_y
-
-    x2 += pad_x
-    y2 += pad_y
-
-    scale_x = (
-        image_width
-        / IMAGE_SIZE
-    )
-
-    scale_y = (
-        image_height
-        / IMAGE_SIZE
-    )
-
-    x1 = int(
-        max(
-            0,
-            x1 * scale_x,
-        )
-    )
-
-    y1 = int(
-        max(
-            0,
-            y1 * scale_y,
-        )
-    )
-
-    x2 = int(
-        min(
-            image_width,
-            (x2 + 1) * scale_x,
-        )
-    )
-
-    y2 = int(
-        min(
-            image_height,
-            (y2 + 1) * scale_y,
-        )
-    )
-
-    if (
-        x2 <= x1
-        or y2 <= y1
-    ):
-
-        return [
-            0,
-            0,
-            image_width,
-            image_height,
-        ]
-
-    return [
-        x1,
-        y1,
-        x2 - x1,
-        y2 - y1,
-    ]
-
-
-# ============================================================
-# AUTOMATIC LESION CROP
-# ============================================================
-
-def generate_automatic_crop(
-    model,
-    image,
-):
-
-    full_tensor = image_to_tensor(
-        image
-    )
-
-    # --------------------------------------------------------
-    # IMPORTANT:
-    # For an uploaded image, there is no ground-truth mask.
-    #
-    # We therefore use the full image as the temporary second
-    # view only to obtain an initial attention map.
-    #
-    # The resulting CAM is then converted into an attention-
-    # based crop and the actual prediction is performed again
-    # using:
-    #
-    #       full image + attention crop
-    #
-    # --------------------------------------------------------
-
-    with torch.enable_grad():
-
-        with torch.no_grad():
-
-            initial_logits = model(
-                full_tensor,
-                full_tensor,
-            )
-
-            initial_probabilities = (
-                torch.softmax(
-                    initial_logits,
-                    dim=1,
-                )[0]
-            )
-
-            initial_class = int(
-                torch.argmax(
-                    initial_probabilities
-                ).item()
-            )
-
-    initial_cam = generate_gradcampp(
-        model,
-        full_tensor,
-        full_tensor,
-        initial_class,
-    )
-
-    bbox = bbox_from_cam(
-        initial_cam,
-        image.size,
-    )
-
-    crop = make_lesion_crop(
-        image,
-        bbox,
-        margin=0.0,
-    )
-
-    return crop, initial_cam, bbox
-
-
-# ============================================================
-# PROBABILITY / CONFIDENCE DISPLAY
+# PROBABILITY DISPLAY
 # ============================================================
 
 def show_probability_distribution(
@@ -1102,7 +746,6 @@ def show_probability_distribution(
 # ============================================================
 
 def show_model_separation(
-    prediction,
     benign_probability,
     malignant_probability,
 ):
@@ -1120,8 +763,7 @@ def show_model_separation(
 
         st.caption(
             "The model assigns relatively similar output "
-            "values to both classes. This represents a "
-            "more uncertain model output."
+            "values to both classes."
         )
 
     elif separation < 0.20:
@@ -1131,8 +773,8 @@ def show_model_separation(
         )
 
         st.caption(
-            "The model shows a preference for the selected "
-            "class, but the alternative remains relatively close."
+            "The model shows a preference for one class, "
+            "but the alternative remains relatively close."
         )
 
     else:
@@ -1145,6 +787,25 @@ def show_model_separation(
             "The model shows a more distinct difference "
             "between the two class outputs."
         )
+
+
+# ============================================================
+# LOAD MODEL
+# ============================================================
+
+try:
+
+    model = load_trained_model()
+
+except Exception as error:
+
+    st.error(
+        "Unable to load the trained AI model."
+    )
+
+    st.exception(error)
+
+    st.stop()
 
 
 # ============================================================
@@ -1174,9 +835,8 @@ with st.sidebar:
     )
 
     st.write(
-        "The model uses two EfficientNet-B3 branches "
-        "to combine information from the complete "
-        "ultrasound image and a lesion-focused view."
+        "The current model uses a single EfficientNet-B3 "
+        "network to analyze the complete ultrasound image."
     )
 
     st.subheader(
@@ -1274,10 +934,10 @@ st.markdown(
         max-width: 760px;
         margin: 0 auto 1.5rem auto;
     ">
-        A research prototype exploring dual-view deep learning
-        for benign and malignant breast ultrasound classification,
-        with probability-based predictions and Grad-CAM++
-        visual explainability.
+        A research prototype exploring EfficientNet-B3
+        for benign and malignant breast ultrasound
+        classification, with probability-based predictions
+        and Grad-CAM++ visual explainability.
     </p>
     """,
     unsafe_allow_html=True,
@@ -1311,12 +971,10 @@ with st.expander(
 ):
 
     st.write(
-        "The trained model contains two independent "
-        "EfficientNet-B3 feature-extraction branches. "
-        "One receives the complete ultrasound image while "
-        "the second receives a lesion-focused view. Their "
-        "learned features are concatenated before the final "
-        "classification layers."
+        "The trained model uses a single EfficientNet-B3 "
+        "architecture for binary breast ultrasound lesion "
+        "classification. The complete ultrasound image is "
+        "resized and provided directly to the network."
     )
 
     c1, c2, c3, c4 = st.columns(4)
@@ -1325,7 +983,7 @@ with st.expander(
 
         st.metric(
             "Architecture",
-            "Dual EfficientNet-B3",
+            "EfficientNet-B3",
         )
 
     with c2:
@@ -1369,9 +1027,9 @@ with st.expander(
     st.write(
         "Breast ultrasound lesions can demonstrate considerable "
         "variation in their visual appearance. This project "
-        "investigates whether a dual-view deep learning approach "
-        "can learn from both the overall ultrasound image and "
-        "a focused lesion representation."
+        "investigates whether deep learning can learn useful "
+        "visual patterns for differentiating benign and "
+        "malignant breast lesions."
     )
 
     st.write(
@@ -1380,25 +1038,6 @@ with st.expander(
         "AI as an assistive research tool and provides a visual "
         "representation of model attention through Grad-CAM++."
     )
-
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
-try:
-
-    model = load_model()
-
-except Exception as error:
-
-    st.error(
-        "Unable to load the trained AI model."
-    )
-
-    st.exception(error)
-
-    st.stop()
 
 
 # ============================================================
@@ -1475,8 +1114,6 @@ if mode == "Upload Ultrasound":
 
         width, height = image.size
 
-        st.write("")
-
         preview_col, info_col = st.columns(
             [2.3, 1],
             gap="large",
@@ -1547,29 +1184,9 @@ if mode == "Upload Ultrasound":
                     "Analyzing ultrasound..."
                 ):
 
-                    # ------------------------------------------------
-                    # Step 1:
-                    # Generate an attention-based lesion crop.
-                    # ------------------------------------------------
-
-                    (
-                        crop_image,
-                        initial_cam,
-                        automatic_bbox,
-                    ) = generate_automatic_crop(
-                        model,
-                        image,
-                    )
-
-                    # ------------------------------------------------
-                    # Step 2:
-                    # Perform the actual dual-view prediction.
-                    # ------------------------------------------------
-
                     result = predict(
                         model,
                         image,
-                        crop_image,
                     )
 
                     prediction = result[
@@ -1588,24 +1205,13 @@ if mode == "Upload Ultrasound":
                         "malignant_probability"
                     ]
 
-                    full_tensor = result[
-                        "full_tensor"
+                    image_tensor = result[
+                        "image_tensor"
                     ]
-
-                    crop_tensor = result[
-                        "crop_tensor"
-                    ]
-
-                    # ------------------------------------------------
-                    # Step 3:
-                    # Generate Grad-CAM++ using the actual
-                    # dual-view prediction.
-                    # ------------------------------------------------
 
                     cam = generate_gradcampp(
                         model,
-                        full_tensor,
-                        crop_tensor,
+                        image_tensor,
                         predicted_class,
                     )
 
@@ -1639,7 +1245,6 @@ if mode == "Upload Ultrasound":
                     )
 
                 show_model_separation(
-                    prediction,
                     benign_probability,
                     malignant_probability,
                 )
@@ -1665,14 +1270,12 @@ if mode == "Upload Ultrasound":
                 )
 
                 st.caption(
-                    "The focused view is generated automatically "
-                    "from the model's initial attention map. "
-                    "Grad-CAM++ then shows regions associated "
-                    "with the final dual-view prediction."
+                    "Grad-CAM++ highlights image regions associated "
+                    "with the model's selected prediction."
                 )
 
-                visual1, visual2, visual3 = st.columns(
-                    3,
+                visual1, visual2 = st.columns(
+                    2,
                     gap="medium",
                 )
 
@@ -1685,14 +1288,6 @@ if mode == "Upload Ultrasound":
                     )
 
                 with visual2:
-
-                    st.image(
-                        crop_image,
-                        caption="AI-Generated Lesion View",
-                        use_container_width=True,
-                    )
-
-                with visual3:
 
                     st.image(
                         gradcam_image,
@@ -1716,22 +1311,28 @@ if mode == "Upload Ultrasound":
                 ):
 
                     st.write(
-                        "**Input strategy:** Full ultrasound image "
-                        "+ automatically generated attention-focused view"
+                        "**Input strategy:** "
+                        "Complete ultrasound image"
                     )
 
                     st.write(
-                        f"**Decision threshold:** {THRESHOLD}"
+                        f"**Input resolution:** "
+                        f"{IMAGE_SIZE} × {IMAGE_SIZE}"
                     )
 
                     st.write(
-                        f"**Initial attention threshold:** "
-                        f"{GRADCAM_THRESHOLD}"
+                        f"**Decision threshold:** "
+                        f"{THRESHOLD}"
                     )
 
                     st.write(
-                        f"**Grad-CAM++ target:** "
-                        f"full_branch.features[{GRADCAM_LAYER_INDEX}]"
+                        "**Architecture:** "
+                        "EfficientNet-B3"
+                    )
+
+                    st.write(
+                        "**Grad-CAM++ target:** "
+                        "features[8]"
                     )
 
             except Exception as error:
@@ -1770,8 +1371,8 @@ else:
     )
 
     st.caption(
-        "These cases use the available BUS-BRA reference "
-        "lesion masks to construct the lesion-focused view."
+        "Reference lesion masks are shown for visualization "
+        "and dataset comparison only."
     )
 
     sample_cols = st.columns(
@@ -1802,10 +1403,6 @@ else:
     sample = SAMPLES[
         selected_sample_name
     ]
-
-    # ------------------------------------------------------------
-    # LOAD SAMPLE IMAGE
-    # ------------------------------------------------------------
 
     image_path = os.path.join(
         SAMPLES_DIR,
@@ -1846,24 +1443,13 @@ else:
     ).convert("L")
 
     # ------------------------------------------------------------
-    # CREATE LESION-FOCUSED VIEW FROM REFERENCE MASK
+    # MASK VISUALIZATION ONLY
     # ------------------------------------------------------------
 
-    bbox = bbox_from_mask(
-        mask
+    mask_overlay = create_mask_overlay(
+        image,
+        mask,
     )
-
-    if bbox is not None:
-
-        crop_image = make_lesion_crop(
-            image,
-            bbox,
-            margin=CROP_MARGIN,
-        )
-
-    else:
-
-        crop_image = image.copy()
 
     # ------------------------------------------------------------
     # MODEL ANALYSIS
@@ -1874,7 +1460,6 @@ else:
         result = predict(
             model,
             image,
-            crop_image,
         )
 
         prediction = result[
@@ -1893,29 +1478,19 @@ else:
             "malignant_probability"
         ]
 
-        full_tensor = result[
-            "full_tensor"
-        ]
-
-        crop_tensor = result[
-            "crop_tensor"
+        image_tensor = result[
+            "image_tensor"
         ]
 
         cam = generate_gradcampp(
             model,
-            full_tensor,
-            crop_tensor,
+            image_tensor,
             predicted_class,
         )
 
         gradcam_image = create_gradcam_overlay(
             image,
             cam,
-        )
-
-        mask_overlay = create_mask_overlay(
-            image,
-            mask,
         )
 
     except Exception as error:
@@ -1928,9 +1503,9 @@ else:
 
         st.stop()
 
-    # ------------------------------------------------------------
+    # ============================================================
     # CASE HEADER
-    # ------------------------------------------------------------
+    # ============================================================
 
     st.write("")
 
@@ -1942,9 +1517,9 @@ else:
         f"Case ID: `{sample['id']}`"
     )
 
-    # ------------------------------------------------------------
+    # ============================================================
     # VISUAL EXPLANATION
-    # ------------------------------------------------------------
+    # ============================================================
 
     st.write("")
 
@@ -1953,12 +1528,12 @@ else:
     )
 
     st.caption(
-        "Compare the original ultrasound, lesion-focused "
-        "view, reference lesion mask, and Grad-CAM++ attention."
+        "Compare the original ultrasound, reference lesion mask, "
+        "and Grad-CAM++ attention."
     )
 
-    visual1, visual2, visual3, visual4 = st.columns(
-        4,
+    visual1, visual2, visual3 = st.columns(
+        3,
         gap="medium",
     )
 
@@ -1973,20 +1548,12 @@ else:
     with visual2:
 
         st.image(
-            crop_image,
-            caption="Lesion-Focused View",
-            use_container_width=True,
-        )
-
-    with visual3:
-
-        st.image(
             mask_overlay,
             caption="Reference Lesion Mask",
             use_container_width=True,
         )
 
-    with visual4:
+    with visual3:
 
         st.image(
             gradcam_image,
@@ -2000,9 +1567,9 @@ else:
         "interpreted as definitive lesion segmentation."
     )
 
-    # ------------------------------------------------------------
+    # ============================================================
     # AI ASSESSMENT
-    # ------------------------------------------------------------
+    # ============================================================
 
     st.write("")
 
@@ -2030,7 +1597,6 @@ else:
             )
 
         show_model_separation(
-            prediction,
             benign_probability,
             malignant_probability,
         )
@@ -2103,7 +1669,7 @@ with st.expander(
 
         st.write(
             "**Architecture:** "
-            "Shared Dual EfficientNet-B3"
+            "EfficientNet-B3"
         )
 
         st.write(
@@ -2139,13 +1705,13 @@ with st.expander(
         )
 
         st.write(
-            f"**Grad-CAM++ target layer:** "
-            f"full_branch.features[{GRADCAM_LAYER_INDEX}]"
+            "**Grad-CAM++ target layer:** "
+            "features[8]"
         )
 
         st.write(
             "**Model input:** "
-            "Full image + lesion-focused view"
+            "Complete ultrasound image"
         )
 
 
