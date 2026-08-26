@@ -1098,8 +1098,6 @@ with hero3:
             "Visual model attention"
         )
 
-st.write("")
-
 st.divider()
 # ============================================================
 # DISCLAIMER
