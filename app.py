@@ -1548,54 +1548,54 @@ if mode == "Upload Ultrasound":
                         )
                     )
 
-               # ====================================================
-# AI ASSESSMENT
-# ====================================================
+                             # ====================================================
+                # AI ASSESSMENT
+                # ====================================================
 
-st.divider()
+                st.divider()
 
-st.subheader(
-    "AI Assessment"
-)
+                st.subheader(
+                    "AI Assessment"
+                )
 
-if prediction == "Benign":
+                if prediction == "Benign":
 
-    st.success(
-        "### Model Prediction: BENIGN"
-    )
+                    st.success(
+                        "### Model Prediction: BENIGN"
+                    )
 
-else:
+                else:
 
-    st.error(
-        "### Model Prediction: MALIGNANT"
-    )
+                    st.error(
+                        "### Model Prediction: MALIGNANT"
+                    )
 
-show_model_separation(
-    benign_probability,
-    malignant_probability,
-)
+                show_model_separation(
+                    benign_probability,
+                    malignant_probability,
+                )
 
-with st.expander(
-    "View model probability distribution",
-    expanded=False,
-):
+                with st.expander(
+                    "View model probability distribution",
+                    expanded=False,
+                ):
 
-    show_probability_distribution(
-        benign_probability,
-        malignant_probability,
-    )
+                    show_probability_distribution(
+                        benign_probability,
+                        malignant_probability,
+                    )
 
-st.download_button(
-    label="📄 Download Analysis Report",
-    data=create_analysis_report(
-        prediction,
-        benign_probability,
-        malignant_probability,
-    ),
-    file_name="breast_ultrasound_analysis_report.txt",
-    mime="text/plain",
-    use_container_width=True,
-)
+                st.download_button(
+                    label="📄 Download Analysis Report",
+                    data=create_analysis_report(
+                        prediction,
+                        benign_probability,
+                        malignant_probability,
+                    ),
+                    file_name="breast_ultrasound_analysis_report.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
                 # ====================================================
                 # VISUAL EXPLANATION
                 # ====================================================
