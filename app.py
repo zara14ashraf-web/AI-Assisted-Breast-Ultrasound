@@ -1260,11 +1260,10 @@ if mode == "Upload Ultrasound":
 
     if uploaded_file is None:
 
-        st.info(
-            "PNG, JPG and JPEG images are supported. "
-            "Please remove patient-identifying information "
-            "before uploading."
-        )
+st.info(
+    "Supported formats: PNG, JPG, JPEG, WEBP, BMP and TIFF. "
+    "Please remove patient-identifying information before uploading."
+)
 
     else:
 
