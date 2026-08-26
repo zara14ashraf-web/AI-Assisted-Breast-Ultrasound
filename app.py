@@ -972,19 +972,34 @@ with st.sidebar:
         "or treatment decisions."
     )
 
-    # --------------------------------------------------------
-    # DEVELOPER
-    # --------------------------------------------------------
+   # --------------------------------------------------------
+# DEVELOPER
+# --------------------------------------------------------
 
-    st.divider()
+st.divider()
 
-    st.markdown(
-        "**Developed by Zara Ashraf**"
-    )
+st.markdown(
+    "### 👩‍💻 Meet the Developer"
+)
 
-    st.caption(
-        "Medical Imaging Technologist"
-    )
+st.markdown(
+    "**Zara Ashraf**"
+)
+
+st.caption(
+    "Medical Imaging Technologist"
+)
+
+st.write(
+    "Combining medical imaging knowledge with "
+    "artificial intelligence to explore meaningful "
+    "applications of AI in healthcare."
+)
+
+st.caption(
+    "Designed & developed as an independent "
+    "medical imaging AI project."
+)
 # ============================================================
 # HERO
 # ============================================================
