@@ -1004,53 +1004,91 @@ with st.sidebar:
 
 st.markdown(
     """
+    <div style="text-align: center;">
+
+    <div style="
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        color: #5c7c87;
+        margin-bottom: 0.55rem;
+    ">
+        AI-ASSISTED MEDICAL IMAGING
+    </div>
+
     <h1 style="
-        text-align: center;
         color: #173f4d;
-        font-size: 2.45rem;
-        font-weight: 750;
-        margin: 0 0 0.35rem 0;
-        line-height: 1.2;
+        font-size: 2.6rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.15;
     ">
-        AI-Assisted Breast Ultrasound Analysis
+        Breast Ultrasound Analysis
     </h1>
-    """,
-    unsafe_allow_html=True,
-)
 
-st.markdown(
-    """
-    <p style="
-        text-align: center;
+    <div style="
         color: #607984;
-        font-size: 1.05rem;
-        margin: 0 0 0.55rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        letter-spacing: 0.2px;
     ">
-        Deep Learning for Breast Lesion Classification
-    </p>
-    """,
-    unsafe_allow_html=True,
-)
+        Deep Learning • Classification • Explainable AI
+    </div>
 
-st.markdown(
-    """
-    <p style="
-        text-align: center;
+    <div style="
         color: #71838b;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         line-height: 1.6;
-        max-width: 760px;
-        margin: 0 auto 1.5rem auto;
+        max-width: 700px;
+        margin: 0.7rem auto 1.25rem auto;
     ">
-        A research prototype exploring EfficientNet-B3
-        for benign and malignant breast ultrasound
-        classification, with probability-based predictions
-        and Grad-CAM++ visual explainability.
-    </p>
+        An AI-assisted research prototype for exploring
+        benign and malignant breast ultrasound patterns
+        with visual model explanation.
+    </div>
+
+    </div>
     """,
     unsafe_allow_html=True,
 )
 
+
+# ============================================================
+# HERO — MODEL HIGHLIGHTS
+# ============================================================
+
+hero1, hero2, hero3 = st.columns(
+    3,
+    gap="medium",
+)
+
+with hero1:
+
+    st.markdown("### 🧠 EfficientNet-B3")
+
+    st.caption(
+        "Deep learning model"
+    )
+
+with hero2:
+
+    st.markdown("### 🎯 Benign / Malignant")
+
+    st.caption(
+        "Binary classification"
+    )
+
+with hero3:
+
+    st.markdown("### 🔬 Grad-CAM++")
+
+    st.caption(
+        "Visual model explanation"
+    )
+
+
+st.write("")
 
 # ============================================================
 # DISCLAIMER
