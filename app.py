@@ -819,19 +819,41 @@ with st.sidebar:
     # --------------------------------------------------------
 
     st.markdown(
-        "## 🩺 Breast Ultrasound AI"
-    )
+        """
+        <div style="
+            text-align: center;
+            margin-bottom: 0.6rem;
+        ">
+            <div style="
+                font-size: 2.2rem;
+                line-height: 1;
+                margin-bottom: 0.3rem;
+            ">
+                🩺
+            </div>
 
-    st.caption(
-        "AI-Assisted Imaging Analysis"
+            <div style="
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #173f4d;
+                letter-spacing: 0.4px;
+            ">
+                BREAST ULTRASOUND AI
+            </div>
+
+            <div style="
+                font-size: 0.74rem;
+                color: #71838b;
+                margin-top: 0.25rem;
+            ">
+                AI-Assisted Imaging Analysis
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.divider()
-
-    st.info(
-        "Exploring deep learning for breast ultrasound "
-        "lesion assessment with explainable AI."
-    )
 
     # --------------------------------------------------------
     # AI MODEL
@@ -841,15 +863,47 @@ with st.sidebar:
 
     st.markdown(
         """
-        **EfficientNet-B3**
-
+        **EfficientNet-B3**  
+        <span style="color:#71838b; font-size:0.78rem;">
         Binary Classification
-
-        `BENIGN`  ·  `MALIGNANT`
-        """
+        </span>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.divider()
+    st.markdown(
+        """
+        <div style="
+            display:flex;
+            gap:0.4rem;
+            margin-top:0.35rem;
+            margin-bottom:0.8rem;
+        ">
+            <span style="
+                background:#eef7f2;
+                color:#2f6b4f;
+                padding:0.2rem 0.5rem;
+                border-radius:12px;
+                font-size:0.68rem;
+                font-weight:700;
+            ">
+                BENIGN
+            </span>
+
+            <span style="
+                background:#fff0f0;
+                color:#9a4545;
+                padding:0.2rem 0.5rem;
+                border-radius:12px;
+                font-size:0.68rem;
+                font-weight:700;
+            ">
+                MALIGNANT
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # --------------------------------------------------------
     # EXPLAINABLE AI
@@ -859,14 +913,15 @@ with st.sidebar:
 
     st.markdown(
         """
-        **Grad-CAM++**
-
-        Visualizes regions associated with the model's
-        selected prediction.
-        """
+        **Grad-CAM++**  
+        <span style="color:#71838b; font-size:0.78rem;">
+        Visual model attention
+        </span>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.divider()
+    st.write("")
 
     # --------------------------------------------------------
     # HOW IT WORKS
@@ -876,14 +931,25 @@ with st.sidebar:
 
     st.markdown(
         """
-        **01**  Upload ultrasound
+        <div style="
+            font-size:0.78rem;
+            line-height:1.75;
+            color:#536870;
+        ">
+            <b style="color:#5c7c87;">01</b>&nbsp;&nbsp;
+            Upload ultrasound<br>
 
-        **02**  AI analysis
+            <b style="color:#5c7c87;">02</b>&nbsp;&nbsp;
+            AI analysis<br>
 
-        **03**  Review prediction
+            <b style="color:#5c7c87;">03</b>&nbsp;&nbsp;
+            Review prediction<br>
 
-        **04**  Explore visual explanation
-        """
+            <b style="color:#5c7c87;">04</b>&nbsp;&nbsp;
+            Visual explanation
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     st.divider()
@@ -892,29 +958,79 @@ with st.sidebar:
     # IMPORTANT NOTICE
     # --------------------------------------------------------
 
-    st.warning(
-        "**Research & Educational Prototype**\n\n"
-        "AI predictions may be incorrect and must not be "
-        "used as a standalone basis for diagnosis or "
-        "treatment decisions."
+    st.markdown(
+        """
+        <div style="
+            background:#fffaf2;
+            border-left:3px solid #d8b66a;
+            padding:0.65rem 0.7rem;
+            border-radius:6px;
+            margin-bottom:0.8rem;
+        ">
+
+            <div style="
+                font-size:0.72rem;
+                font-weight:750;
+                color:#7a5a25;
+                margin-bottom:0.2rem;
+            ">
+                ⚠ RESEARCH & EDUCATIONAL USE
+            </div>
+
+            <div style="
+                font-size:0.68rem;
+                color:#786f61;
+                line-height:1.45;
+            ">
+                AI output may be incorrect and is not intended
+                for clinical diagnosis or treatment decisions.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     # --------------------------------------------------------
     # DEVELOPER
     # --------------------------------------------------------
 
-    st.divider()
-
     st.markdown(
-        "**Developed by**"
-    )
+        """
+        <div style="
+            text-align:center;
+            padding-top:0.15rem;
+        ">
 
-    st.markdown(
-        "**Zara Ashraf**"
-    )
+            <div style="
+                font-size:0.65rem;
+                color:#8a989e;
+                letter-spacing:0.8px;
+                font-weight:650;
+            ">
+                DEVELOPED BY
+            </div>
 
-    st.caption(
-        "Medical Imaging Technologist"
+            <div style="
+                font-size:0.85rem;
+                font-weight:750;
+                color:#173f4d;
+                margin-top:0.15rem;
+            ">
+                Zara Ashraf
+            </div>
+
+            <div style="
+                font-size:0.68rem;
+                color:#71838b;
+                margin-top:0.1rem;
+            ">
+                Medical Imaging Technologist
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
 # ============================================================
