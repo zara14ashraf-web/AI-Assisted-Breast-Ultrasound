@@ -1002,23 +1002,61 @@ with st.sidebar:
 # HERO
 # ============================================================
 
-st.caption(
-    "AI-ASSISTED MEDICAL IMAGING"
+st.markdown(
+    """
+    <div style="text-align: center;">
+
+    <div style="
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        color: #5c7c87;
+        margin-bottom: 0.55rem;
+    ">
+        AI-ASSISTED MEDICAL IMAGING
+    </div>
+
+    <h1 style="
+        color: #173f4d;
+        font-size: 2.6rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.15;
+    ">
+        Breast Ultrasound Analysis
+    </h1>
+
+    <div style="
+        color: #607984;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        letter-spacing: 0.2px;
+    ">
+        Deep Learning • Classification • Explainable AI
+    </div>
+
+    <div style="
+        color: #71838b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0.7rem auto 1.25rem auto;
+    ">
+        An AI-assisted research prototype for exploring
+        benign and malignant breast ultrasound patterns
+        with visual model explanation.
+    </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-st.title(
-    "Breast Ultrasound Analysis"
-)
 
-st.subheader(
-    "Deep Learning • Classification • Explainable AI"
-)
-
-st.write(
-    "An AI-assisted research prototype for exploring "
-    "benign and malignant breast ultrasound patterns "
-    "with visual model explanation."
-)
+# ============================================================
+# HERO — MODEL HIGHLIGHTS
+# ============================================================
 
 hero1, hero2, hero3 = st.columns(
     3,
@@ -1027,36 +1065,24 @@ hero1, hero2, hero3 = st.columns(
 
 with hero1:
 
-    st.markdown(
-        "### 🧠 EfficientNet-B3"
-    )
+    with st.container(border=True):
 
-    st.caption(
-        "Deep learning model"
-    )
+        st.markdown(
+            "### 🧠 EfficientNet-B3"
+        )
+
+        st.caption(
+            "Deep learning model for breast ultrasound "
+            "classification."
+        )
 
 with hero2:
 
-    st.markdown(
-        "### 🎯 Benign / Malignant"
-    )
+    with st.container(border=True):
 
-    st.caption(
-        "Binary classification"
-    )
-
-with hero3:
-
-    st.markdown(
-        "### 🔬 Grad-CAM++"
-    )
-
-    st.caption(
-        "Visual model explanation"
-    )
+        st.mark
 
 st.write("")
-
 # ============================================================
 # DISCLAIMER
 # ============================================================
