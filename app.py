@@ -1097,16 +1097,18 @@ st.divider()
 # DISCLAIMER
 # ============================================================
 
-st.warning(
-    """
-    **Research & Educational Prototype**
+with st.container(border=True):
 
-    This application is designed for research and educational
-    purposes only. AI predictions may be incorrect and should
-    not be used as a standalone basis for diagnosis or treatment.
-    Always rely on assessment by a qualified healthcare professional.
-    """
-)
+    st.markdown(
+        "##### ℹ️ Research & Educational Prototype"
+    )
+
+    st.caption(
+        "This application is intended for research and educational "
+        "purposes only. AI predictions may be incorrect and should "
+        "not be used as a standalone basis for clinical diagnosis "
+        "or treatment decisions."
+    )
 
 
 # ============================================================
