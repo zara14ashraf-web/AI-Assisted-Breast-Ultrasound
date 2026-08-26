@@ -819,406 +819,103 @@ with st.sidebar:
     # --------------------------------------------------------
 
     st.markdown(
-        """
-        <div style="
-            text-align: center;
-            padding: 0.4rem 0 1.1rem 0;
-        ">
-
-            <div style="
-                font-size: 2.7rem;
-                margin-bottom: 0.35rem;
-            ">
-                🩺
-            </div>
-
-            <div style="
-                font-size: 1.25rem;
-                font-weight: 750;
-                letter-spacing: 0.3px;
-                color: #173f4d;
-                line-height: 1.25;
-            ">
-                BREAST ULTRASOUND AI
-            </div>
-
-            <div style="
-                font-size: 0.82rem;
-                color: #71838b;
-                margin-top: 0.35rem;
-                line-height: 1.4;
-            ">
-                AI-Assisted Imaging Analysis
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        "## 🩺 Breast Ultrasound AI"
     )
 
-    st.markdown(
-        """
-        <div style="
-            background: white;
-            border: 1px solid #e2eaed;
-            border-radius: 12px;
-            padding: 0.85rem 0.9rem;
-            margin-bottom: 1rem;
-            line-height: 1.55;
-        ">
-            <div style="
-                font-size: 0.84rem;
-                color: #536870;
-            ">
-                Exploring deep learning for breast ultrasound
-                lesion assessment with explainable AI.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.caption(
+        "AI-Assisted Imaging Analysis"
+    )
+
+    st.divider()
+
+    st.info(
+        "Exploring deep learning for breast ultrasound "
+        "lesion assessment with explainable AI."
     )
 
     # --------------------------------------------------------
     # AI MODEL
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.72rem;
-            font-weight: 750;
-            letter-spacing: 1.1px;
-            color: #71838b;
-            margin: 0.4rem 0 0.45rem 0;
-        ">
-            AI MODEL
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("**AI MODEL**")
 
     st.markdown(
         """
-        <div style="
-            background: white;
-            border: 1px solid #e2eaed;
-            border-radius: 12px;
-            padding: 0.85rem 0.9rem;
-            margin-bottom: 1rem;
-        ">
+        **EfficientNet-B3**
 
-            <div style="
-                font-size: 1.05rem;
-                font-weight: 750;
-                color: #173f4d;
-            ">
-                EfficientNet-B3
-            </div>
+        Binary Classification
 
-            <div style="
-                font-size: 0.78rem;
-                color: #71838b;
-                margin-top: 0.25rem;
-                margin-bottom: 0.65rem;
-            ">
-                Binary Classification
-            </div>
-
-            <div style="
-                display: flex;
-                gap: 0.45rem;
-                flex-wrap: wrap;
-            ">
-
-                <span style="
-                    background: #eef7f2;
-                    color: #2f6b4f;
-                    border-radius: 20px;
-                    padding: 0.25rem 0.55rem;
-                    font-size: 0.72rem;
-                    font-weight: 650;
-                ">
-                    BENIGN
-                </span>
-
-                <span style="
-                    background: #fff0f0;
-                    color: #9a4545;
-                    border-radius: 20px;
-                    padding: 0.25rem 0.55rem;
-                    font-size: 0.72rem;
-                    font-weight: 650;
-                ">
-                    MALIGNANT
-                </span>
-
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        `BENIGN`  ·  `MALIGNANT`
+        """
     )
+
+    st.divider()
 
     # --------------------------------------------------------
     # EXPLAINABLE AI
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.72rem;
-            font-weight: 750;
-            letter-spacing: 1.1px;
-            color: #71838b;
-            margin: 0.4rem 0 0.45rem 0;
-        ">
-            EXPLAINABLE AI
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("**EXPLAINABLE AI**")
 
     st.markdown(
         """
-        <div style="
-            background: white;
-            border: 1px solid #e2eaed;
-            border-radius: 12px;
-            padding: 0.85rem 0.9rem;
-            margin-bottom: 1rem;
-        ">
+        **Grad-CAM++**
 
-            <div style="
-                font-size: 1.0rem;
-                font-weight: 750;
-                color: #173f4d;
-            ">
-                Grad-CAM++
-            </div>
-
-            <div style="
-                font-size: 0.78rem;
-                color: #71838b;
-                line-height: 1.5;
-                margin-top: 0.3rem;
-            ">
-                Visualizes regions associated with the model's
-                selected prediction.
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        Visualizes regions associated with the model's
+        selected prediction.
+        """
     )
+
+    st.divider()
 
     # --------------------------------------------------------
     # HOW IT WORKS
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.72rem;
-            font-weight: 750;
-            letter-spacing: 1.1px;
-            color: #71838b;
-            margin: 0.4rem 0 0.45rem 0;
-        ">
-            HOW IT WORKS
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("**HOW IT WORKS**")
 
     st.markdown(
         """
-        <div style="
-            background: white;
-            border: 1px solid #e2eaed;
-            border-radius: 12px;
-            padding: 0.75rem 0.85rem;
-            margin-bottom: 1rem;
-        ">
+        **01**  Upload ultrasound
 
-            <div style="
-                display: flex;
-                align-items: center;
-                margin: 0.25rem 0;
-            ">
-                <span style="
-                    font-weight: 750;
-                    color: #5c7c87;
-                    width: 28px;
-                ">
-                    01
-                </span>
+        **02**  AI analysis
 
-                <span style="
-                    font-size: 0.8rem;
-                    color: #536870;
-                ">
-                    Upload ultrasound
-                </span>
-            </div>
+        **03**  Review prediction
 
-            <div style="
-                display: flex;
-                align-items: center;
-                margin: 0.25rem 0;
-            ">
-                <span style="
-                    font-weight: 750;
-                    color: #5c7c87;
-                    width: 28px;
-                ">
-                    02
-                </span>
-
-                <span style="
-                    font-size: 0.8rem;
-                    color: #536870;
-                ">
-                    AI analysis
-                </span>
-            </div>
-
-            <div style="
-                display: flex;
-                align-items: center;
-                margin: 0.25rem 0;
-            ">
-                <span style="
-                    font-weight: 750;
-                    color: #5c7c87;
-                    width: 28px;
-                ">
-                    03
-                </span>
-
-                <span style="
-                    font-size: 0.8rem;
-                    color: #536870;
-                ">
-                    Review prediction
-                </span>
-            </div>
-
-            <div style="
-                display: flex;
-                align-items: center;
-                margin: 0.25rem 0;
-            ">
-                <span style="
-                    font-weight: 750;
-                    color: #5c7c87;
-                    width: 28px;
-                ">
-                    04
-                </span>
-
-                <span style="
-                    font-size: 0.8rem;
-                    color: #536870;
-                ">
-                    Explore visual explanation
-                </span>
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        **04**  Explore visual explanation
+        """
     )
+
+    st.divider()
 
     # --------------------------------------------------------
     # IMPORTANT NOTICE
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            background: #fffaf2;
-            border: 1px solid #eee0c6;
-            border-radius: 12px;
-            padding: 0.85rem 0.9rem;
-            margin-bottom: 1rem;
-        ">
-
-            <div style="
-                font-size: 0.78rem;
-                font-weight: 750;
-                color: #7a5a25;
-                margin-bottom: 0.3rem;
-            ">
-                ⚠ IMPORTANT
-            </div>
-
-            <div style="
-                font-size: 0.76rem;
-                font-weight: 650;
-                color: #695a42;
-                margin-bottom: 0.3rem;
-            ">
-                Research & Educational Prototype
-            </div>
-
-            <div style="
-                font-size: 0.72rem;
-                color: #786f61;
-                line-height: 1.5;
-            ">
-                AI predictions may be incorrect and must not be
-                used as a standalone basis for diagnosis or
-                treatment decisions.
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.warning(
+        "**Research & Educational Prototype**\n\n"
+        "AI predictions may be incorrect and must not be "
+        "used as a standalone basis for diagnosis or "
+        "treatment decisions."
     )
 
     # --------------------------------------------------------
     # DEVELOPER
     # --------------------------------------------------------
 
+    st.divider()
+
     st.markdown(
-        """
-        <div style="
-            text-align: center;
-            padding: 0.65rem 0 0.2rem 0;
-            border-top: 1px solid #e2eaed;
-        ">
-
-            <div style="
-                font-size: 0.68rem;
-                letter-spacing: 0.8px;
-                color: #8a989e;
-                font-weight: 650;
-                margin-bottom: 0.25rem;
-            ">
-                DEVELOPED BY
-            </div>
-
-            <div style="
-                font-size: 0.9rem;
-                font-weight: 750;
-                color: #173f4d;
-            ">
-                Zara Ashraf
-            </div>
-
-            <div style="
-                font-size: 0.72rem;
-                color: #71838b;
-                margin-top: 0.15rem;
-            ">
-                Medical Imaging Technologist
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        "**Developed by**"
     )
 
+    st.markdown(
+        "**Zara Ashraf**"
+    )
+
+    st.caption(
+        "Medical Imaging Technologist"
+    )
 
 # ============================================================
 # HERO
