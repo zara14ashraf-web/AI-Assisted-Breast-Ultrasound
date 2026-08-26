@@ -818,9 +818,7 @@ with st.sidebar:
     # BRANDING
     # --------------------------------------------------------
 
-    st.markdown(
-        "## 🩺 Breast Ultrasound AI"
-    )
+    st.markdown("## 🩺 Breast Ultrasound AI")
 
     st.caption(
         "AI-Assisted Imaging Analysis"
@@ -971,10 +969,6 @@ with st.sidebar:
         "used as a standalone basis for clinical diagnosis "
         "or treatment decisions."
     )
-
-  with st.sidebar:
-
-    # ... baaki sidebar sections ...
 
     # --------------------------------------------------------
     # DEVELOPER
