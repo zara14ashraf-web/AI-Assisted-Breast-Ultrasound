@@ -697,7 +697,72 @@ def predict(
         "image_tensor": image_tensor,
     }
 
+# ============================================================
+# DOWNLOAD ANALYSIS REPORT
+# ============================================================
 
+def create_analysis_report(
+    prediction,
+    benign_probability,
+    malignant_probability,
+):
+
+    separation = abs(
+        benign_probability
+        - malignant_probability
+    )
+
+    if separation < 0.10:
+        separation_text = "Low model separation"
+
+    elif separation < 0.20:
+        separation_text = "Moderate model separation"
+
+    else:
+        separation_text = "Clearer model separation"
+
+    report = f"""
+AI-ASSISTED BREAST ULTRASOUND ANALYSIS
+======================================
+
+AI PREDICTION
+-------------
+Prediction: {prediction}
+
+Benign Output: {benign_probability * 100:.1f}%
+Malignant Output: {malignant_probability * 100:.1f}%
+
+Model Separation: {separation_text}
+
+VISUAL EXPLANATION
+------------------
+Grad-CAM++ provides a visual representation of
+image regions associated with the model's selected
+prediction.
+
+IMPORTANT
+---------
+This AI-generated result is intended for research
+and educational purposes only.
+
+AI predictions may be incorrect or uncertain and
+should not be used alone for diagnosis or treatment
+decisions.
+
+Grad-CAM++ represents model attention and should
+not be interpreted as definitive lesion segmentation.
+
+This output does not replace assessment by a
+qualified healthcare professional.
+
+----------------------------------------
+Independent Medical Imaging AI Project
+Designed & developed by Zara Ashraf
+Medical Imaging Technologist
+----------------------------------------
+"""
+
+    return report
 # ============================================================
 # PROBABILITY DISPLAY
 # ============================================================
