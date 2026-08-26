@@ -1118,44 +1118,75 @@ with st.expander(
     expanded=False,
 ):
 
-    st.write(
-        "The trained model uses a single EfficientNet-B3 "
-        "architecture for binary breast ultrasound lesion "
-        "classification. The complete ultrasound image is "
-        "resized and provided directly to the network."
+    st.markdown(
+        """
+        This system uses a **single EfficientNet-B3 model** to
+        analyze complete breast ultrasound images and classify
+        them into two categories: **Benign** or **Malignant**.
+        """
     )
 
-    c1, c2, c3, c4 = st.columns(4)
+    st.write("")
 
-    with c1:
+    overview1, overview2, overview3 = st.columns(
+        3,
+        gap="medium",
+    )
 
-        st.metric(
-            "Architecture",
-            "EfficientNet-B3",
-        )
+    with overview1:
 
-    with c2:
+        with st.container(border=True):
 
-        st.metric(
-            "Task",
-            "Benign vs Malignant",
-        )
+            st.markdown(
+                "#### 🧠 Architecture"
+            )
 
-    with c3:
+            st.markdown(
+                "**EfficientNet-B3**"
+            )
 
-        st.metric(
-            "Input",
-            "300 × 300",
-        )
+            st.caption(
+                "Deep convolutional neural network"
+            )
 
-    with c4:
+    with overview2:
 
-        st.metric(
-            "Explainability",
-            "Grad-CAM++",
-        )
+        with st.container(border=True):
 
+            st.markdown(
+                "#### 🎯 Classification"
+            )
 
+            st.markdown(
+                "**Benign / Malignant**"
+            )
+
+            st.caption(
+                "Binary lesion classification"
+            )
+
+    with overview3:
+
+        with st.container(border=True):
+
+            st.markdown(
+                "#### 🔬 Explainability"
+            )
+
+            st.markdown(
+                "**Grad-CAM++**"
+            )
+
+            st.caption(
+                "Visualizes model attention"
+            )
+
+    st.write("")
+
+    st.caption(
+        "The model analyzes the complete ultrasound image rather "
+        "than relying on a manually selected lesion crop."
+    )
 # ============================================================
 # WHY WAS THIS DEVELOPED?
 # ============================================================
