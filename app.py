@@ -1899,69 +1899,41 @@ else:
 
 
 # ============================================================
-# TECHNICAL INFORMATION
+# PROJECT CLOSING
 # ============================================================
 
 st.divider()
 
-with st.expander(
-    "Technical Model Information"
-):
+st.markdown(
+    "### Thank You for Exploring This Project"
+)
 
-    technical1, technical2 = st.columns(
-        2
-    )
+st.caption(
+    "This project brings together medical imaging, "
+    "artificial intelligence, and explainable AI to explore "
+    "new possibilities in breast ultrasound analysis."
+)
 
-    with technical1:
+st.write(
+    "The goal is not to replace clinical expertise, but to "
+    "explore how AI can be developed as an assistive tool "
+    "within medical imaging research."
+)
 
-        st.write(
-            "**Architecture:** "
-            "EfficientNet-B3"
-        )
+st.write("")
 
-        st.write(
-            "**Task:** "
-            "Binary breast lesion classification"
-        )
+st.markdown(
+    "**Independent Medical Imaging AI Project**"
+)
 
-        st.write(
-            "**Classes:** "
-            "Benign and Malignant"
-        )
+st.caption(
+    "Designed & developed by Zara Ashraf"
+)
 
-        st.write(
-            f"**Input resolution:** "
-            f"{IMAGE_SIZE} × {IMAGE_SIZE}"
-        )
-
-    with technical2:
-
-        st.write(
-            f"**Decision threshold:** "
-            f"{THRESHOLD}"
-        )
-
-        st.write(
-            f"**Inference device:** "
-            f"{device}"
-        )
-
-        st.write(
-            "**Explainability:** "
-            "Grad-CAM++"
-        )
-
-        st.write(
-            "**Grad-CAM++ target layer:** "
-            "features[8]"
-        )
-
-        st.write(
-            "**Model input:** "
-            "Complete ultrasound image"
-        )
-
-
+st.caption(
+    "Designed & developed as an independent "
+    "medical imaging AI project."
+)
 # ============================================================
 # FOOTER
 # ============================================================
