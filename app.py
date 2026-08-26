@@ -1091,7 +1091,21 @@ with hero3:
         )
 
 st.write("")
+# ------------------------------------------------------------
+# DEVELOPER CREDIT
+# ------------------------------------------------------------
 
+st.write("")
+
+st.markdown(
+    "##### Developed by **Zara Ashraf**"
+)
+
+st.caption(
+    "Medical Imaging Technologist"
+)
+
+st.write("")
 st.divider()
 # ============================================================
 # DISCLAIMER
