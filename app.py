@@ -1511,7 +1511,7 @@ else:
 
     st.write("")
 
-   st.caption(
+    st.caption(
     "Explore four representative ultrasound cases and review "
     "how the AI model responds to each image."
 )
