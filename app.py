@@ -1205,13 +1205,57 @@ with st.expander(
 st.divider()
 
 st.markdown(
-    "### Analyze Breast Ultrasound"
+    "## 🔍 Analyze Breast Ultrasound"
 )
 
 st.caption(
-    "Upload an ultrasound image or explore the representative "
-    "BUS-BRA sample cases."
+    "Choose how you would like to explore the AI-assisted "
+    "analysis system."
 )
+
+st.write("")
+
+option1, option2 = st.columns(
+    2,
+    gap="medium",
+)
+
+with option1:
+
+    with st.container(border=True):
+
+        st.markdown(
+            "### 📤 Upload Ultrasound"
+        )
+
+        st.write(
+            "Upload an ultrasound image for AI-assisted "
+            "classification and visual explanation."
+        )
+
+        st.caption(
+            "Prediction • Probability • Grad-CAM++"
+        )
+
+
+with option2:
+
+    with st.container(border=True):
+
+        st.markdown(
+            "### 🧪 Explore Sample Cases"
+        )
+
+        st.write(
+            "Explore representative cases and compare "
+            "the ultrasound image with model attention."
+        )
+
+        st.caption(
+            "Image • Reference Mask • Grad-CAM++"
+        )
+
+st.write("")
 
 mode = st.radio(
     "Choose an analysis method",
@@ -1223,6 +1267,7 @@ mode = st.radio(
     label_visibility="collapsed",
 )
 
+st.write("")
 
 # ============================================================
 # UPLOAD MODE
