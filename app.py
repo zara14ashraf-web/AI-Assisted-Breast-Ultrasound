@@ -1192,32 +1192,39 @@ with st.expander(
 # ============================================================
 
 with st.expander(
-    "🔬 Why was this developed?",
+    "💡 Why was this developed?",
     expanded=False,
 ):
 
-    st.write(
-        "As a Medical Imaging Technologist, I developed this "
-        "project to explore how artificial intelligence can "
-        "complement medical imaging workflows and support "
-        "research in breast ultrasound analysis."
+    st.markdown(
+        """
+        As a **Medical Imaging Technologist**, I am interested in
+        how emerging technologies can complement medical imaging
+        and contribute to the future of healthcare.
+        """
     )
 
     st.write(
-        "Breast ultrasound lesions can demonstrate considerable "
-        "variation in their visual appearance. This project "
-        "investigates whether deep learning can learn useful "
-        "visual patterns for differentiating benign and "
-        "malignant breast lesions."
+        "Breast ultrasound can present lesions with varied and "
+        "sometimes subtle visual characteristics. This project "
+        "explores whether deep learning can learn meaningful "
+        "patterns from ultrasound images and assist in their "
+        "classification."
     )
 
     st.write(
-        "The purpose is not to replace radiologists or medical "
-        "imaging professionals. Instead, the system explores "
-        "AI as an assistive research tool and provides a visual "
-        "representation of model attention through Grad-CAM++."
+        "The goal is not to replace radiologists or medical "
+        "imaging professionals. Instead, it is to explore AI "
+        "as an assistive research technology while making the "
+        "model's decision process more transparent through "
+        "Grad-CAM++ visual explanations."
     )
 
+    st.info(
+        "The project reflects my interest in combining "
+        "medical imaging knowledge with artificial intelligence "
+        "to explore practical applications of AI in healthcare."
+    )
 
 # ============================================================
 # ANALYSIS AREA
