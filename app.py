@@ -974,6 +974,7 @@ with st.sidebar:
 
   with st.sidebar:
 
+    # ... baaki sidebar sections ...
 
     # --------------------------------------------------------
     # DEVELOPER
