@@ -1252,7 +1252,7 @@ if mode == "Upload Ultrasound":
         ],
         label_visibility="collapsed",
         help=(
-            "Supported formats: PNG, JPG and JPEG. "
+            "Supported formats: PNG, JPG, JPEG, WEBP, BMP and TIFF. "
             "Remove patient-identifying information "
             "before uploading."
         ),
