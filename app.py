@@ -1120,72 +1120,39 @@ with st.expander(
 
     st.markdown(
         """
-        This system uses a **single EfficientNet-B3 model** to
-        analyze complete breast ultrasound images and classify
-        them into two categories: **Benign** or **Malignant**.
+        The system analyzes a **complete breast ultrasound image**
+        using a deep learning classification pipeline.
         """
     )
 
-    st.write("")
-
-    overview1, overview2, overview3 = st.columns(
-        3,
-        gap="medium",
+    st.write(
+        "The image is first prepared for model inference and then "
+        "processed by the trained EfficientNet-B3 network. The model "
+        "produces output scores for the two classification categories, "
+        "which are converted into a probability distribution."
     )
 
-    with overview1:
-
-        with st.container(border=True):
-
-            st.markdown(
-                "#### 🧠 Architecture"
-            )
-
-            st.markdown(
-                "**EfficientNet-B3**"
-            )
-
-            st.caption(
-                "Deep convolutional neural network"
-            )
-
-    with overview2:
-
-        with st.container(border=True):
-
-            st.markdown(
-                "#### 🎯 Classification"
-            )
-
-            st.markdown(
-                "**Benign / Malignant**"
-            )
-
-            st.caption(
-                "Binary lesion classification"
-            )
-
-    with overview3:
-
-        with st.container(border=True):
-
-            st.markdown(
-                "#### 🔬 Explainability"
-            )
-
-            st.markdown(
-                "**Grad-CAM++**"
-            )
-
-            st.caption(
-                "Visualizes model attention"
-            )
+    st.write(
+        "The selected prediction is determined using the configured "
+        "decision threshold. Grad-CAM++ is subsequently used to "
+        "visualize image regions associated with that prediction."
+    )
 
     st.write("")
 
+    st.markdown(
+        "**Analysis pipeline**"
+    )
+
+    st.write(
+        "Ultrasound Image  →  Preprocessing  →  "
+        "Deep Learning Model  →  Classification  →  "
+        "Grad-CAM++ Explanation"
+    )
+
     st.caption(
-        "The model analyzes the complete ultrasound image rather "
-        "than relying on a manually selected lesion crop."
+        "The visual explanation represents model attention and "
+        "does not constitute definitive lesion segmentation."
     )
 # ============================================================
 # WHY WAS THIS DEVELOPED?
