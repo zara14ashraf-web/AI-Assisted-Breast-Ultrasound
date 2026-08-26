@@ -1511,9 +1511,10 @@ else:
 
     st.write("")
 
-    st.caption(
-        "Explore the four representative BUS-BRA sample cases."
-    )
+   st.caption(
+    "Explore four representative ultrasound cases and review "
+    "how the AI model responds to each image."
+)
 
     sample_names = list(
         SAMPLES.keys()
@@ -1530,9 +1531,9 @@ else:
     )
 
     st.caption(
-        "Reference lesion masks are shown for visualization "
-        "and dataset comparison only."
-    )
+    "Reference lesion masks are provided for visual comparison "
+    "only and do not represent the model's prediction."
+)
 
     sample_cols = st.columns(
         4,
