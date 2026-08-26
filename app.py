@@ -96,20 +96,28 @@ HF_CHECKPOINT_URL = (
 
 
 # ============================================================
-# FINAL MODEL CONFIGURATION
+# MODEL CONFIGURATION
 # ============================================================
 
 MODEL_NAME = "Shared Dual EfficientNet-B3"
 
 IMAGE_SIZE = 300
 
+# Decision threshold used by the deployed model.
 THRESHOLD = 0.52
 
+# Lesion crop margin.
 CROP_MARGIN = 0.25
 
+# Grad-CAM++ target layer.
 GRADCAM_LAYER_INDEX = 8
 
+# Threshold used when generating an
+# attention-based automatic crop.
 GRADCAM_THRESHOLD = 0.40
+
+# Padding around CAM-derived region.
+CAM_PADDING = 0.20
 
 MEAN = [
     0.485,
@@ -172,7 +180,7 @@ device = torch.device(
 
 
 # ============================================================
-# DOWNLOAD CHECKPOINT
+# CHECKPOINT DOWNLOAD
 # ============================================================
 
 def download_checkpoint():
@@ -206,6 +214,41 @@ def download_checkpoint():
 
 
 # ============================================================
+# CHECKPOINT STATE DICT
+# ============================================================
+
+def extract_state_dict(checkpoint):
+
+    if not isinstance(checkpoint, dict):
+        raise ValueError(
+            "Unexpected checkpoint format."
+        )
+
+    if "state_dict" in checkpoint:
+
+        state_dict = checkpoint["state_dict"]
+
+    elif "model_state_dict" in checkpoint:
+
+        state_dict = checkpoint["model_state_dict"]
+
+    else:
+
+        state_dict = checkpoint
+
+    cleaned_state_dict = {}
+
+    for key, value in state_dict.items():
+
+        if key.startswith("module."):
+            key = key[7:]
+
+        cleaned_state_dict[key] = value
+
+    return cleaned_state_dict
+
+
+# ============================================================
 # LOAD MODEL
 # ============================================================
 
@@ -214,8 +257,6 @@ def load_model():
 
     download_checkpoint()
 
-    # IMPORTANT:
-    # This matches the verified model.py architecture.
     model = SharedDualEfficientNetB3()
 
     checkpoint = torch.load(
@@ -224,37 +265,12 @@ def load_model():
         weights_only=False,
     )
 
-    if isinstance(checkpoint, dict):
-
-        if "state_dict" in checkpoint:
-
-            state_dict = checkpoint["state_dict"]
-
-        elif "model_state_dict" in checkpoint:
-
-            state_dict = checkpoint["model_state_dict"]
-
-        else:
-
-            state_dict = checkpoint
-
-    else:
-
-        state_dict = checkpoint
-
-    # Remove DataParallel prefix if present.
-    cleaned_state_dict = {}
-
-    for key, value in state_dict.items():
-
-        if key.startswith("module."):
-
-            key = key[7:]
-
-        cleaned_state_dict[key] = value
+    state_dict = extract_state_dict(
+        checkpoint
+    )
 
     model.load_state_dict(
-        cleaned_state_dict,
+        state_dict,
         strict=True,
     )
 
@@ -272,7 +288,10 @@ def load_model():
 transform = transforms.Compose(
     [
         transforms.Resize(
-            (IMAGE_SIZE, IMAGE_SIZE)
+            (
+                IMAGE_SIZE,
+                IMAGE_SIZE,
+            )
         ),
 
         transforms.ToTensor(),
@@ -283,6 +302,19 @@ transform = transforms.Compose(
         ),
     ]
 )
+
+
+# ============================================================
+# IMAGE → MODEL TENSOR
+# ============================================================
+
+def image_to_tensor(image):
+
+    return (
+        transform(image)
+        .unsqueeze(0)
+        .to(device)
+    )
 
 
 # ============================================================
@@ -330,6 +362,10 @@ def make_lesion_crop(
         y + height + pad_y,
     )
 
+    if x2 <= x1 or y2 <= y1:
+
+        return image.copy()
+
     return image.crop(
         (
             x1,
@@ -338,6 +374,42 @@ def make_lesion_crop(
             y2,
         )
     )
+
+
+# ============================================================
+# MASK → BBOX
+# ============================================================
+
+def bbox_from_mask(mask):
+
+    mask_array = np.array(
+        mask.convert("L")
+    )
+
+    mask_binary = (
+        mask_array > 0
+    )
+
+    if not mask_binary.any():
+
+        return None
+
+    ys, xs = np.where(
+        mask_binary
+    )
+
+    x1 = int(xs.min())
+    x2 = int(xs.max())
+
+    y1 = int(ys.min())
+    y2 = int(ys.max())
+
+    return [
+        x1,
+        y1,
+        x2 - x1 + 1,
+        y2 - y1 + 1,
+    ]
 
 
 # ============================================================
@@ -479,9 +551,7 @@ class GradCAMPlusPlus:
             target_class,
         ]
 
-        score.backward(
-            retain_graph=False
-        )
+        score.backward()
 
         activations = self.activations
         gradients = self.gradients
@@ -709,7 +779,7 @@ def create_gradcam_overlay(
 
 
 # ============================================================
-# PREDICTION
+# MODEL PREDICTION
 # ============================================================
 
 def predict(
@@ -718,17 +788,13 @@ def predict(
     crop_image,
 ):
 
-    full_tensor = transform(
+    full_tensor = image_to_tensor(
         image
-    ).unsqueeze(
-        0
-    ).to(device)
+    )
 
-    crop_tensor = transform(
+    crop_tensor = image_to_tensor(
         crop_image
-    ).unsqueeze(
-        0
-    ).to(device)
+    )
 
     with torch.no_grad():
 
@@ -750,38 +816,58 @@ def predict(
         probabilities[1].item()
     )
 
+    predicted_class = (
+        1
+        if malignant_probability >= THRESHOLD
+        else 0
+    )
+
     prediction = (
         "Malignant"
-        if malignant_probability >= THRESHOLD
+        if predicted_class == 1
         else "Benign"
     )
 
-    return (
-        prediction,
-        benign_probability,
-        malignant_probability,
-        full_tensor,
-        crop_tensor,
-    )
+    return {
+        "prediction": prediction,
+        "predicted_class": predicted_class,
+        "benign_probability": benign_probability,
+        "malignant_probability": malignant_probability,
+        "full_tensor": full_tensor,
+        "crop_tensor": crop_tensor,
+    }
 
 
 # ============================================================
-# AUTOMATIC ATTENTION CROP
+# AUTOMATIC CAM BBOX
 # ============================================================
 
 def bbox_from_cam(
     cam,
     original_size,
     threshold_ratio=GRADCAM_THRESHOLD,
-    padding_ratio=0.20,
+    padding_ratio=CAM_PADDING,
 ):
 
     image_width, image_height = (
         original_size
     )
 
-    threshold = (
+    maximum = float(
         cam.max()
+    )
+
+    if maximum <= 0:
+
+        return [
+            0,
+            0,
+            image_width,
+            image_height,
+        ]
+
+    threshold = (
+        maximum
         * threshold_ratio
     )
 
@@ -802,11 +888,11 @@ def bbox_from_cam(
         active
     )
 
-    x1 = xs.min()
-    x2 = xs.max()
+    x1 = int(xs.min())
+    x2 = int(xs.max())
 
-    y1 = ys.min()
-    y2 = ys.max()
+    y1 = int(ys.min())
+    y2 = int(ys.max())
 
     roi_width = (
         x2 - x1 + 1
@@ -859,14 +945,14 @@ def bbox_from_cam(
     x2 = int(
         min(
             image_width,
-            x2 * scale_x,
+            (x2 + 1) * scale_x,
         )
     )
 
     y2 = int(
         min(
             image_height,
-            y2 * scale_y,
+            (y2 + 1) * scale_y,
         )
     )
 
@@ -890,36 +976,57 @@ def bbox_from_cam(
     ]
 
 
+# ============================================================
+# AUTOMATIC LESION CROP
+# ============================================================
+
 def generate_automatic_crop(
     model,
     image,
 ):
 
-    full_tensor = transform(
+    full_tensor = image_to_tensor(
         image
-    ).unsqueeze(
-        0
-    ).to(device)
-
-    with torch.no_grad():
-
-        logits = model(
-            full_tensor,
-            full_tensor,
-        )
-
-        probabilities = torch.softmax(
-            logits,
-            dim=1,
-        )[0]
-
-    initial_class = int(
-        torch.argmax(
-            probabilities
-        ).item()
     )
 
-    cam = generate_gradcampp(
+    # --------------------------------------------------------
+    # IMPORTANT:
+    # For an uploaded image, there is no ground-truth mask.
+    #
+    # We therefore use the full image as the temporary second
+    # view only to obtain an initial attention map.
+    #
+    # The resulting CAM is then converted into an attention-
+    # based crop and the actual prediction is performed again
+    # using:
+    #
+    #       full image + attention crop
+    #
+    # --------------------------------------------------------
+
+    with torch.enable_grad():
+
+        with torch.no_grad():
+
+            initial_logits = model(
+                full_tensor,
+                full_tensor,
+            )
+
+            initial_probabilities = (
+                torch.softmax(
+                    initial_logits,
+                    dim=1,
+                )[0]
+            )
+
+            initial_class = int(
+                torch.argmax(
+                    initial_probabilities
+                ).item()
+            )
+
+    initial_cam = generate_gradcampp(
         model,
         full_tensor,
         full_tensor,
@@ -927,7 +1034,7 @@ def generate_automatic_crop(
     )
 
     bbox = bbox_from_cam(
-        cam,
+        initial_cam,
         image.size,
     )
 
@@ -937,7 +1044,100 @@ def generate_automatic_crop(
         margin=0.0,
     )
 
-    return crop
+    return crop, initial_cam, bbox
+
+
+# ============================================================
+# PROBABILITY / CONFIDENCE DISPLAY
+# ============================================================
+
+def show_probability_distribution(
+    benign_probability,
+    malignant_probability,
+):
+
+    prob1, prob2 = st.columns(
+        2,
+        gap="large",
+    )
+
+    with prob1:
+
+        st.metric(
+            "Benign",
+            f"{benign_probability * 100:.1f}%",
+        )
+
+        st.progress(
+            float(benign_probability)
+        )
+
+    with prob2:
+
+        st.metric(
+            "Malignant",
+            f"{malignant_probability * 100:.1f}%",
+        )
+
+        st.progress(
+            float(malignant_probability)
+        )
+
+    st.caption(
+        "These percentages represent the model's output "
+        "distribution. They do not represent diagnostic "
+        "accuracy, disease probability, or clinical certainty."
+    )
+
+
+# ============================================================
+# MODEL SEPARATION
+# ============================================================
+
+def show_model_separation(
+    prediction,
+    benign_probability,
+    malignant_probability,
+):
+
+    separation = abs(
+        benign_probability
+        - malignant_probability
+    )
+
+    if separation < 0.10:
+
+        st.warning(
+            "**Low model separation**"
+        )
+
+        st.caption(
+            "The model assigns relatively similar output "
+            "values to both classes. This represents a "
+            "more uncertain model output."
+        )
+
+    elif separation < 0.20:
+
+        st.warning(
+            "**Moderate model separation**"
+        )
+
+        st.caption(
+            "The model shows a preference for the selected "
+            "class, but the alternative remains relatively close."
+        )
+
+    else:
+
+        st.success(
+            "**Clearer model separation**"
+        )
+
+        st.caption(
+            "The model shows a more distinct difference "
+            "between the two class outputs."
+        )
 
 
 # ============================================================
@@ -967,9 +1167,9 @@ with st.sidebar:
     )
 
     st.write(
-        "The model uses a dual-view architecture "
-        "that combines the complete ultrasound image "
-        "with a lesion-focused representation."
+        "The model uses two EfficientNet-B3 branches "
+        "to combine information from the complete "
+        "ultrasound image and a lesion-focused view."
     )
 
     st.subheader(
@@ -989,13 +1189,13 @@ with st.sidebar:
     )
 
     st.write(
-        "Grad-CAM++ is used to visualize regions "
+        "Grad-CAM++ is used to visualize image regions "
         "associated with the model's selected prediction."
     )
 
     st.caption(
-        "The highlighted region represents model "
-        "attention, not a definitive lesion segmentation."
+        "Highlighted regions represent model attention, "
+        "not definitive lesion segmentation."
     )
 
     st.divider()
@@ -1104,10 +1304,12 @@ with st.expander(
 ):
 
     st.write(
-        "The trained model uses two EfficientNet-B3 branches. "
-        "One processes the complete ultrasound image while "
-        "the other processes a lesion-focused representation. "
-        "Their learned features are combined for classification."
+        "The trained model contains two independent "
+        "EfficientNet-B3 feature-extraction branches. "
+        "One receives the complete ultrasound image while "
+        "the second receives a lesion-focused view. Their "
+        "learned features are concatenated before the final "
+        "classification layers."
     )
 
     c1, c2, c3, c4 = st.columns(4)
@@ -1203,8 +1405,8 @@ st.markdown(
 )
 
 st.caption(
-    "Upload an ultrasound image or explore the four "
-    "representative BUS-BRA sample cases."
+    "Upload an ultrasound image or explore the representative "
+    "BUS-BRA sample cases."
 )
 
 mode = st.radio(
@@ -1338,30 +1540,60 @@ if mode == "Upload Ultrasound":
                     "Analyzing ultrasound..."
                 ):
 
-                    crop_image = (
-                        generate_automatic_crop(
-                            model,
-                            image,
-                        )
-                    )
+                    # ------------------------------------------------
+                    # Step 1:
+                    # Generate an attention-based lesion crop.
+                    # ------------------------------------------------
 
                     (
-                        prediction,
-                        benign_probability,
-                        malignant_probability,
-                        full_tensor,
-                        crop_tensor,
-                    ) = predict(
+                        crop_image,
+                        initial_cam,
+                        automatic_bbox,
+                    ) = generate_automatic_crop(
+                        model,
+                        image,
+                    )
+
+                    # ------------------------------------------------
+                    # Step 2:
+                    # Perform the actual dual-view prediction.
+                    # ------------------------------------------------
+
+                    result = predict(
                         model,
                         image,
                         crop_image,
                     )
 
-                    predicted_class = (
-                        1
-                        if prediction == "Malignant"
-                        else 0
-                    )
+                    prediction = result[
+                        "prediction"
+                    ]
+
+                    predicted_class = result[
+                        "predicted_class"
+                    ]
+
+                    benign_probability = result[
+                        "benign_probability"
+                    ]
+
+                    malignant_probability = result[
+                        "malignant_probability"
+                    ]
+
+                    full_tensor = result[
+                        "full_tensor"
+                    ]
+
+                    crop_tensor = result[
+                        "crop_tensor"
+                    ]
+
+                    # ------------------------------------------------
+                    # Step 3:
+                    # Generate Grad-CAM++ using the actual
+                    # dual-view prediction.
+                    # ------------------------------------------------
 
                     cam = generate_gradcampp(
                         model,
@@ -1387,11 +1619,6 @@ if mode == "Upload Ultrasound":
                     "AI Assessment"
                 )
 
-                probability_separation = abs(
-                    benign_probability
-                    - malignant_probability
-                )
-
                 if prediction == "Benign":
 
                     st.success(
@@ -1404,79 +1631,20 @@ if mode == "Upload Ultrasound":
                         "### Model Prediction: MALIGNANT"
                     )
 
-                if probability_separation < 0.10:
-
-                    st.warning(
-                        "**Low model separation**"
-                    )
-
-                    st.caption(
-                        "The model assigns similar output "
-                        "probabilities to both classes. "
-                        "This represents a more uncertain "
-                        "model output."
-                    )
-
-                elif probability_separation < 0.20:
-
-                    st.warning(
-                        "**Moderate model separation**"
-                    )
-
-                    st.caption(
-                        "The model shows a preference for "
-                        "the predicted class, but the "
-                        "alternative class remains relatively close."
-                    )
-
-                else:
-
-                    st.success(
-                        "**Clearer model separation**"
-                    )
-
-                    st.caption(
-                        "The model shows a more distinct "
-                        "difference between the two class outputs."
-                    )
+                show_model_separation(
+                    prediction,
+                    benign_probability,
+                    malignant_probability,
+                )
 
                 with st.expander(
                     "View model probability distribution",
                     expanded=False,
                 ):
 
-                    prob1, prob2 = st.columns(
-                        2,
-                        gap="large",
-                    )
-
-                    with prob1:
-
-                        st.metric(
-                            "Benign",
-                            f"{benign_probability * 100:.1f}%",
-                        )
-
-                        st.progress(
-                            benign_probability
-                        )
-
-                    with prob2:
-
-                        st.metric(
-                            "Malignant",
-                            f"{malignant_probability * 100:.1f}%",
-                        )
-
-                        st.progress(
-                            malignant_probability
-                        )
-
-                    st.caption(
-                        "These percentages represent the model's "
-                        "output distribution. They do not represent "
-                        "diagnostic accuracy, disease probability, "
-                        "or clinical certainty."
+                    show_probability_distribution(
+                        benign_probability,
+                        malignant_probability,
                     )
 
                 # ====================================================
@@ -1490,9 +1658,10 @@ if mode == "Upload Ultrasound":
                 )
 
                 st.caption(
-                    "The focused view is generated from model "
-                    "attention. Grad-CAM++ highlights image regions "
-                    "associated with the selected prediction."
+                    "The focused view is generated automatically "
+                    "from the model's initial attention map. "
+                    "Grad-CAM++ then shows regions associated "
+                    "with the final dual-view prediction."
                 )
 
                 visual1, visual2, visual3 = st.columns(
@@ -1530,6 +1699,34 @@ if mode == "Upload Ultrasound":
                     "segmentation."
                 )
 
+                # ====================================================
+                # TECHNICAL NOTE
+                # ====================================================
+
+                with st.expander(
+                    "View analysis details",
+                    expanded=False,
+                ):
+
+                    st.write(
+                        "**Input strategy:** Full ultrasound image "
+                        "+ automatically generated attention-focused view"
+                    )
+
+                    st.write(
+                        f"**Decision threshold:** {THRESHOLD}"
+                    )
+
+                    st.write(
+                        f"**Initial attention threshold:** "
+                        f"{GRADCAM_THRESHOLD}"
+                    )
+
+                    st.write(
+                        f"**Grad-CAM++ target:** "
+                        f"full_branch.features[{GRADCAM_LAYER_INDEX}]"
+                    )
+
             except Exception as error:
 
                 st.error(
@@ -1548,7 +1745,7 @@ else:
     st.write("")
 
     st.caption(
-        "Explore the four final verified BUS-BRA sample cases."
+        "Explore the four representative BUS-BRA sample cases."
     )
 
     sample_names = list(
@@ -1566,9 +1763,8 @@ else:
     )
 
     st.caption(
-        "These cases were selected from the test set and "
-        "verified as correctly classified with strong "
-        "Grad-CAM++ localization."
+        "These cases use the available BUS-BRA reference "
+        "lesion masks to construct the lesion-focused view."
     )
 
     sample_cols = st.columns(
@@ -1601,7 +1797,7 @@ else:
     ]
 
     # ------------------------------------------------------------
-    # LOAD SAMPLE FILES
+    # LOAD SAMPLE IMAGE
     # ------------------------------------------------------------
 
     image_path = os.path.join(
@@ -1643,35 +1839,14 @@ else:
     ).convert("L")
 
     # ------------------------------------------------------------
-    # SAMPLE LESION VIEW
+    # CREATE LESION-FOCUSED VIEW FROM REFERENCE MASK
     # ------------------------------------------------------------
 
-    mask_array = np.array(
+    bbox = bbox_from_mask(
         mask
     )
 
-    mask_binary = (
-        mask_array > 0
-    )
-
-    if mask_binary.any():
-
-        ys, xs = np.where(
-            mask_binary
-        )
-
-        x1 = int(xs.min())
-        x2 = int(xs.max())
-
-        y1 = int(ys.min())
-        y2 = int(ys.max())
-
-        bbox = [
-            x1,
-            y1,
-            x2 - x1 + 1,
-            y2 - y1 + 1,
-        ]
+    if bbox is not None:
 
         crop_image = make_lesion_crop(
             image,
@@ -1689,23 +1864,35 @@ else:
 
     try:
 
-        (
-            prediction,
-            benign_probability,
-            malignant_probability,
-            full_tensor,
-            crop_tensor,
-        ) = predict(
+        result = predict(
             model,
             image,
             crop_image,
         )
 
-        predicted_class = (
-            1
-            if prediction == "Malignant"
-            else 0
-        )
+        prediction = result[
+            "prediction"
+        ]
+
+        predicted_class = result[
+            "predicted_class"
+        ]
+
+        benign_probability = result[
+            "benign_probability"
+        ]
+
+        malignant_probability = result[
+            "malignant_probability"
+        ]
+
+        full_tensor = result[
+            "full_tensor"
+        ]
+
+        crop_tensor = result[
+            "crop_tensor"
+        ]
 
         cam = generate_gradcampp(
             model,
@@ -1759,8 +1946,8 @@ else:
     )
 
     st.caption(
-        "Compare the original ultrasound, the lesion-focused "
-        "view, the ground-truth lesion mask, and Grad-CAM++."
+        "Compare the original ultrasound, lesion-focused "
+        "view, reference lesion mask, and Grad-CAM++ attention."
     )
 
     visual1, visual2, visual3, visual4 = st.columns(
@@ -1803,7 +1990,7 @@ else:
     st.caption(
         "The reference mask is provided for dataset visualization. "
         "Grad-CAM++ represents model attention and should not be "
-        "interpreted as a definitive segmentation."
+        "interpreted as definitive lesion segmentation."
     )
 
     # ------------------------------------------------------------
@@ -1823,11 +2010,6 @@ else:
             "AI Assessment"
         )
 
-        probability_separation = abs(
-            benign_probability
-            - malignant_probability
-        )
-
         if prediction == "Benign":
 
             st.success(
@@ -1840,75 +2022,20 @@ else:
                 "Model prediction: **MALIGNANT**"
             )
 
-        if probability_separation < 0.10:
-
-            st.warning(
-                "**Low model separation**"
-            )
-
-            st.caption(
-                "The model assigns similar output probabilities "
-                "to both classes. Interpret this output cautiously."
-            )
-
-        elif probability_separation < 0.20:
-
-            st.warning(
-                "**Moderate model separation**"
-            )
-
-            st.caption(
-                "The model shows a preference for the predicted "
-                "class, but the alternative remains relatively close."
-            )
-
-        else:
-
-            st.success(
-                "**Clearer model separation**"
-            )
-
-            st.caption(
-                "The model shows a more distinct difference "
-                "between the two class outputs."
-            )
+        show_model_separation(
+            prediction,
+            benign_probability,
+            malignant_probability,
+        )
 
         with st.expander(
             "View model probability distribution",
             expanded=False,
         ):
 
-            prob1, prob2 = st.columns(
-                2,
-                gap="large",
-            )
-
-            with prob1:
-
-                st.metric(
-                    "Benign",
-                    f"{benign_probability * 100:.1f}%",
-                )
-
-                st.progress(
-                    benign_probability
-                )
-
-            with prob2:
-
-                st.metric(
-                    "Malignant",
-                    f"{malignant_probability * 100:.1f}%",
-                )
-
-                st.progress(
-                    malignant_probability
-                )
-
-            st.caption(
-                "These percentages represent the model's output "
-                "distribution. They do not represent diagnostic "
-                "accuracy, disease probability, or clinical certainty."
+            show_probability_distribution(
+                benign_probability,
+                malignant_probability,
             )
 
     with reference_col:
@@ -1932,6 +2059,18 @@ else:
         st.markdown(
             f"**{sample['id']}**"
         )
+
+        if prediction == sample["label"]:
+
+            st.success(
+                "Model prediction matches the dataset reference."
+            )
+
+        else:
+
+            st.warning(
+                "Model prediction differs from the dataset reference."
+            )
 
         st.caption(
             "Reference information is displayed only "
@@ -1994,7 +2133,7 @@ with st.expander(
 
         st.write(
             f"**Grad-CAM++ target layer:** "
-            f"features[{GRADCAM_LAYER_INDEX}]"
+            f"full_branch.features[{GRADCAM_LAYER_INDEX}]"
         )
 
         st.write(
