@@ -697,7 +697,7 @@ def predict(
         "image_tensor": image_tensor,
     }
 
-# ============================================================
+  # ============================================================
 # DOWNLOAD ANALYSIS REPORT
 # ============================================================
 
@@ -713,13 +713,11 @@ def create_analysis_report(
     )
 
     if separation < 0.10:
-        separation_text = "Low model separation"
-
+        separation_text = "Low"
     elif separation < 0.20:
-        separation_text = "Moderate model separation"
-
+        separation_text = "Moderate"
     else:
-        separation_text = "Clearer model separation"
+        separation_text = "Clear"
 
     report = f"""
 AI-ASSISTED BREAST ULTRASOUND ANALYSIS
@@ -729,37 +727,47 @@ AI PREDICTION
 -------------
 Prediction: {prediction}
 
-Benign Output: {benign_probability * 100:.1f}%
-Malignant Output: {malignant_probability * 100:.1f}%
+Benign: {benign_probability * 100:.1f}%
+Malignant: {malignant_probability * 100:.1f}%
 
 Model Separation: {separation_text}
 
-VISUAL EXPLANATION
-------------------
-Grad-CAM++ provides a visual representation of
+ABOUT THE VISUAL EXPLANATION
+----------------------------
+Grad-CAM++ provides a visual indication of the
 image regions associated with the model's selected
 prediction.
 
+It represents model attention and should not be
+interpreted as definitive lesion segmentation.
+
 IMPORTANT
 ---------
-This AI-generated result is intended for research
-and educational purposes only.
+This analysis is provided for research and
+educational purposes only.
 
-AI predictions may be incorrect or uncertain and
+AI predictions can be incorrect or uncertain and
 should not be used alone for diagnosis or treatment
 decisions.
 
-Grad-CAM++ represents model attention and should
-not be interpreted as definitive lesion segmentation.
-
-This output does not replace assessment by a
+This result does not replace assessment by a
 qualified healthcare professional.
 
-----------------------------------------
+--------------------------------------------
+
+Thank you for exploring this project.
+
+This project brings together medical imaging,
+artificial intelligence, and explainable AI to
+explore new possibilities in breast ultrasound
+analysis.
+
 Independent Medical Imaging AI Project
+
 Designed & developed by Zara Ashraf
 Medical Imaging Technologist
-----------------------------------------
+
+--------------------------------------------
 """
 
     return report
