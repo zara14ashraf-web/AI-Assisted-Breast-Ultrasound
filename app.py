@@ -1258,7 +1258,7 @@ if mode == "Upload Ultrasound":
         ),
     )
 
-          if uploaded_file is None:
+    if uploaded_file is None:
 
         st.info(
             "Supported formats: PNG, JPG, JPEG, WEBP, BMP and TIFF. "
