@@ -814,17 +814,23 @@ except Exception as error:
 
 with st.sidebar:
 
-    # --------------------------------------------------------
-    # BRANDING
-    # --------------------------------------------------------
+   # --------------------------------------------------------
+# BRANDING
+# --------------------------------------------------------
 
-    st.markdown("## 🩺 Breast Ultrasound AI")
+st.markdown(
+    "## 🩺 Breast Ultrasound AI"
+)
 
-    st.caption(
-        "AI-Assisted Imaging Analysis"
-    )
+st.caption(
+    "AI-Assisted Imaging Analysis"
+)
 
-    st.divider()
+st.markdown(
+    "**Developed by Zara Ashraf**"
+)
+
+st.divider()
 
     # --------------------------------------------------------
     # QUICK OVERVIEW
