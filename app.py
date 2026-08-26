@@ -1920,20 +1920,7 @@ st.write(
     "within medical imaging research."
 )
 
-st.write("")
 
-st.markdown(
-    "**Independent Medical Imaging AI Project**"
-)
-
-st.caption(
-    "Designed & developed by Zara Ashraf"
-)
-
-st.caption(
-    "Designed & developed as an independent "
-    "medical imaging AI project."
-)
 # ============================================================
 # FOOTER
 # ============================================================
@@ -1944,7 +1931,7 @@ st.markdown(
         <b>AI-Assisted Breast Ultrasound Analysis</b><br>
         Breast Ultrasound Research Prototype<br><br>
         Developed by <b>Zara Ashraf</b><br>
-        BS Medical Imaging Technology
+        Medical Imaging Technologist
     </div>
     """,
     unsafe_allow_html=True,
