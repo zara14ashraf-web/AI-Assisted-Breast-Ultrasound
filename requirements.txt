@@ -2,6 +2,8 @@ streamlit
 torch
 torchvision
 timm
-numpy
 Pillow
-requests
+numpy
+opencv-python-headless
+huggingface_hub
+grad-cam
