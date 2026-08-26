@@ -819,220 +819,172 @@ with st.sidebar:
     # --------------------------------------------------------
 
     st.markdown(
-        """
-        <div style="
-            text-align: center;
-            margin-bottom: 0.6rem;
-        ">
-            <div style="
-                font-size: 2.2rem;
-                line-height: 1;
-                margin-bottom: 0.3rem;
-            ">
-                🩺
-            </div>
+        "## 🩺 Breast Ultrasound AI"
+    )
 
-            <div style="
-                font-size: 1.15rem;
-                font-weight: 800;
-                color: #173f4d;
-                letter-spacing: 0.4px;
-            ">
-                BREAST ULTRASOUND AI
-            </div>
-
-            <div style="
-                font-size: 0.74rem;
-                color: #71838b;
-                margin-top: 0.25rem;
-            ">
-                AI-Assisted Imaging Analysis
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.caption(
+        "AI-Assisted Imaging Analysis"
     )
 
     st.divider()
 
     # --------------------------------------------------------
-    # AI MODEL
+    # QUICK OVERVIEW
     # --------------------------------------------------------
 
-    st.markdown("**AI MODEL**")
+    st.markdown("### 🔍 System Overview")
 
-    st.markdown(
-        """
-        **EfficientNet-B3**  
-        <span style="color:#71838b; font-size:0.78rem;">
-        Binary Classification
-        </span>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            gap:0.4rem;
-            margin-top:0.35rem;
-            margin-bottom:0.8rem;
-        ">
-            <span style="
-                background:#eef7f2;
-                color:#2f6b4f;
-                padding:0.2rem 0.5rem;
-                border-radius:12px;
-                font-size:0.68rem;
-                font-weight:700;
-            ">
-                BENIGN
-            </span>
-
-            <span style="
-                background:#fff0f0;
-                color:#9a4545;
-                padding:0.2rem 0.5rem;
-                border-radius:12px;
-                font-size:0.68rem;
-                font-weight:700;
-            ">
-                MALIGNANT
-            </span>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.write(
+        "This research prototype uses deep learning to "
+        "classify breast ultrasound images as benign or "
+        "malignant and provides a visual explanation of "
+        "the model's prediction."
     )
 
     # --------------------------------------------------------
-    # EXPLAINABLE AI
+    # MODEL INFORMATION
     # --------------------------------------------------------
 
-    st.markdown("**EXPLAINABLE AI**")
+    with st.expander(
+        "🧠 AI Model",
+        expanded=True,
+    ):
 
-    st.markdown(
-        """
-        **Grad-CAM++**  
-        <span style="color:#71838b; font-size:0.78rem;">
-        Visual model attention
-        </span>
-        """,
-        unsafe_allow_html=True,
-    )
+        st.markdown(
+            "**EfficientNet-B3**"
+        )
 
-    st.write("")
+        st.caption(
+            "A convolutional neural network used for "
+            "binary breast lesion classification."
+        )
+
+        st.write(
+            "**Classes:** Benign • Malignant"
+        )
+
+        st.write(
+            "**Input:** Complete ultrasound image"
+        )
 
     # --------------------------------------------------------
-    # HOW IT WORKS
+    # EXPLAINABILITY
     # --------------------------------------------------------
 
-    st.markdown("**HOW IT WORKS**")
+    with st.expander(
+        "🔬 Explainable AI",
+        expanded=False,
+    ):
 
-    st.markdown(
-        """
-        <div style="
-            font-size:0.78rem;
-            line-height:1.75;
-            color:#536870;
-        ">
-            <b style="color:#5c7c87;">01</b>&nbsp;&nbsp;
-            Upload ultrasound<br>
+        st.markdown(
+            "**Grad-CAM++**"
+        )
 
-            <b style="color:#5c7c87;">02</b>&nbsp;&nbsp;
-            AI analysis<br>
+        st.write(
+            "The model's prediction is accompanied by a "
+            "visual attention map highlighting image regions "
+            "that contributed to the selected prediction."
+        )
 
-            <b style="color:#5c7c87;">03</b>&nbsp;&nbsp;
-            Review prediction<br>
+        st.caption(
+            "Attention maps indicate model focus and should "
+            "not be interpreted as definitive lesion segmentation."
+        )
 
-            <b style="color:#5c7c87;">04</b>&nbsp;&nbsp;
-            Visual explanation
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # --------------------------------------------------------
+    # WORKFLOW
+    # --------------------------------------------------------
 
-    st.divider()
+    with st.expander(
+        "⚙️ How It Works",
+        expanded=False,
+    ):
+
+        st.markdown(
+            """
+            **01 — Upload**
+
+            Provide a breast ultrasound image.
+
+            **02 — Analyze**
+
+            The EfficientNet-B3 model processes the image.
+
+            **03 — Prediction**
+
+            The system provides a benign or malignant output
+            with the model's probability distribution.
+
+            **04 — Explanation**
+
+            Grad-CAM++ visualizes regions associated with
+            the selected prediction.
+            """
+        )
+
+    # --------------------------------------------------------
+    # INTERPRETING RESULTS
+    # --------------------------------------------------------
+
+    with st.expander(
+        "📊 Understanding the Output",
+        expanded=False,
+    ):
+
+        st.write(
+            "**Prediction**"
+        )
+
+        st.caption(
+            "The class selected by the model using the "
+            "configured decision threshold."
+        )
+
+        st.write(
+            "**Probability Distribution**"
+        )
+
+        st.caption(
+            "Shows the model's relative output for the "
+            "Benign and Malignant classes."
+        )
+
+        st.write(
+            "**Model Separation**"
+        )
+
+        st.caption(
+            "Indicates how distinctly the model's outputs "
+            "favor one class over the other."
+        )
 
     # --------------------------------------------------------
     # IMPORTANT NOTICE
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            background:#fffaf2;
-            border-left:3px solid #d8b66a;
-            padding:0.65rem 0.7rem;
-            border-radius:6px;
-            margin-bottom:0.8rem;
-        ">
+    st.divider()
 
-            <div style="
-                font-size:0.72rem;
-                font-weight:750;
-                color:#7a5a25;
-                margin-bottom:0.2rem;
-            ">
-                ⚠ RESEARCH & EDUCATIONAL USE
-            </div>
-
-            <div style="
-                font-size:0.68rem;
-                color:#786f61;
-                line-height:1.45;
-            ">
-                AI output may be incorrect and is not intended
-                for clinical diagnosis or treatment decisions.
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.warning(
+        "**Research & Educational Use Only**\n\n"
+        "This AI system is a research prototype. Its "
+        "predictions may be incorrect and should not be "
+        "used as a standalone basis for clinical diagnosis "
+        "or treatment decisions."
     )
 
     # --------------------------------------------------------
     # DEVELOPER
     # --------------------------------------------------------
 
+    st.divider()
+
     st.markdown(
-        """
-        <div style="
-            text-align:center;
-            padding-top:0.15rem;
-        ">
-
-            <div style="
-                font-size:0.65rem;
-                color:#8a989e;
-                letter-spacing:0.8px;
-                font-weight:650;
-            ">
-                DEVELOPED BY
-            </div>
-
-            <div style="
-                font-size:0.85rem;
-                font-weight:750;
-                color:#173f4d;
-                margin-top:0.15rem;
-            ">
-                Zara Ashraf
-            </div>
-
-            <div style="
-                font-size:0.68rem;
-                color:#71838b;
-                margin-top:0.1rem;
-            ">
-                Medical Imaging Technologist
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+        "**Developed by Zara Ashraf**"
     )
 
+    st.caption(
+        "Medical Imaging Technologist"
+    )
 # ============================================================
 # HERO
 # ============================================================
