@@ -1002,60 +1002,37 @@ with st.sidebar:
 # HERO
 # ============================================================
 
-st.markdown(
-    """
-    <div style="text-align: center;">
+st.write("")
 
-    <div style="
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 1.8px;
-        color: #5c7c87;
-        margin-bottom: 0.55rem;
-    ">
-        AI-ASSISTED MEDICAL IMAGING
-    </div>
-
-    <h1 style="
-        color: #173f4d;
-        font-size: 2.6rem;
-        font-weight: 800;
-        margin: 0;
-        line-height: 1.15;
-    ">
-        Breast Ultrasound Analysis
-    </h1>
-
-    <div style="
-        color: #607984;
-        font-size: 1rem;
-        font-weight: 600;
-        margin-top: 0.5rem;
-        letter-spacing: 0.2px;
-    ">
-        Deep Learning • Classification • Explainable AI
-    </div>
-
-    <div style="
-        color: #71838b;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        max-width: 700px;
-        margin: 0.7rem auto 1.25rem auto;
-    ">
-        An AI-assisted research prototype for exploring
-        benign and malignant breast ultrasound patterns
-        with visual model explanation.
-    </div>
-
-    </div>
-    """,
-    unsafe_allow_html=True,
+# Small identity label
+st.caption(
+    "AI-ASSISTED MEDICAL IMAGING"
 )
 
+# Main title
+st.markdown(
+    "# 🩺 Breast Ultrasound Analysis"
+)
+
+# Subtitle
+st.markdown(
+    "### Deep Learning • Classification • Explainable AI"
+)
+
+st.write("")
+
+st.markdown(
+    """
+    Explore how artificial intelligence can assist in the
+    analysis of breast ultrasound images through deep learning
+    classification and visual model explanation.
+    """
+)
+
+st.write("")
 
 # ============================================================
-# HERO — MODEL HIGHLIGHTS
+# HERO HIGHLIGHTS
 # ============================================================
 
 hero1, hero2, hero3 = st.columns(
@@ -1068,21 +1045,54 @@ with hero1:
     with st.container(border=True):
 
         st.markdown(
-            "### 🧠 EfficientNet-B3"
+            "#### 🧠 AI Model"
+        )
+
+        st.markdown(
+            "**EfficientNet-B3**"
         )
 
         st.caption(
-            "Deep learning model for breast ultrasound "
-            "classification."
+            "Deep learning architecture"
         )
+
 
 with hero2:
 
     with st.container(border=True):
 
-        st.mark
+        st.markdown(
+            "#### 🎯 Classification"
+        )
+
+        st.markdown(
+            "**Benign • Malignant**"
+        )
+
+        st.caption(
+            "Binary lesion classification"
+        )
 
 
+with hero3:
+
+    with st.container(border=True):
+
+        st.markdown(
+            "#### 🔬 Explainability"
+        )
+
+        st.markdown(
+            "**Grad-CAM++**"
+        )
+
+        st.caption(
+            "Visual model attention"
+        )
+
+st.write("")
+
+st.divider()
 # ============================================================
 # DISCLAIMER
 # ============================================================
