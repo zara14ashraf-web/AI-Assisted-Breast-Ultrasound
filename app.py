@@ -1159,7 +1159,7 @@ with st.expander(
         "The visual explanation represents model attention and "
         "does not constitute definitive lesion segmentation."
     )
-   # ============================================================
+  # ============================================================
 # THINGS THAT WILL HELP YOU UNDERSTAND THIS APP BETTER
 # ============================================================
 
@@ -1169,51 +1169,87 @@ with st.expander(
 ):
 
     st.caption(
-        "A quick and simple guide to the AI results, "
-        "visual explanations, and key terms you may see."
+        "New to AI? No worries — here's a simple guide "
+        "to what you're seeing."
     )
 
     st.markdown("### 🧠 AI Prediction")
 
-    st.write(
-        "The result selected by the trained AI model based "
-        "on visual patterns learned from ultrasound images."
+    st.markdown(
+        "**So, what did the AI decide?**"
     )
+
+    st.write(
+        "The model looks at the ultrasound image and gives "
+        "its best prediction: **Benign** or **Malignant**."
+    )
+
+    st.markdown("---")
 
     st.markdown("### 📊 Probability")
 
+    st.markdown(
+        "**What do these percentages mean?**"
+    )
+
     st.write(
-        "Shows how the model's output is distributed between "
-        "Benign and Malignant. These values should not be "
-        "interpreted as a patient's actual probability of disease."
+        "They show which class the AI is leaning towards "
+        "and by how much. For example, if Benign is 80% "
+        "and Malignant is 20%, the model is leaning more "
+        "towards Benign."
+    )
+
+    st.caption(
+        "These percentages are not the patient's actual "
+        "chance of having cancer."
     )
 
     st.markdown("---")
 
     st.markdown("### 📍 Model Separation")
 
-    st.write(
-        "Indicates how distinctly the model's outputs differ "
-        "between the two classes. A smaller difference means "
-        "the model's outputs are closer together."
+    st.markdown(
+        "**How clear is the AI about its choice?**"
     )
+
+    st.write(
+        "Look at the difference between the two results. "
+        "If the values are very close, the model is having "
+        "a harder time choosing between the two classes. "
+        "A larger difference means the model has a clearer "
+        "preference."
+    )
+
+    st.markdown("---")
 
     st.markdown("### 🔬 Grad-CAM++")
 
+    st.markdown(
+        "**What are those coloured areas on the image?**"
+    )
+
     st.write(
-        "Creates a heatmap showing image regions associated "
-        "with the model's selected prediction. It represents "
-        "model attention, not a definitive lesion boundary."
+        "That's Grad-CAM++. It gives us a visual idea of "
+        "which parts of the image were important to the AI "
+        "when making its prediction."
+    )
+
+    st.caption(
+        "It does not draw or confirm the exact lesion."
     )
 
     st.markdown("---")
 
     st.markdown("### 🎯 Reference Lesion Mask")
 
+    st.markdown(
+        "**Then what is the marked lesion area?**"
+    )
+
     st.write(
-        "For representative cases, the reference mask shows "
-        "the annotated lesion region provided for visual comparison. "
-        "It is separate from the AI-generated Grad-CAM++ attention."
+        "For the sample cases, this is the reference lesion "
+        "mask. It shows the annotated lesion area so you can "
+        "compare it with the area highlighted by Grad-CAM++."
     )
 # ============================================================
 # WHY WAS THIS DEVELOPED?
