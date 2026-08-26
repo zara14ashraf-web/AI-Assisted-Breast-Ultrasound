@@ -1105,18 +1105,16 @@ st.divider()
 # DISCLAIMER
 # ============================================================
 
-with st.container(border=True):
+st.caption(
+    "ℹ️ **Research & Educational Prototype**"
+)
 
-    st.markdown(
-        "##### ℹ️ Research & Educational Prototype"
-    )
-
-    st.caption(
-        "This application is intended for research and educational "
-        "purposes only. AI predictions may be incorrect and should "
-        "not be used as a standalone basis for clinical diagnosis "
-        "or treatment decisions."
-    )
+st.caption(
+    "This application is intended for research and educational "
+    "purposes only. AI predictions may be incorrect and should "
+    "not be used as a standalone basis for clinical diagnosis "
+    "or treatment decisions."
+)
 
 
 # ============================================================
