@@ -1526,7 +1526,7 @@ else:
             sample_names[0]
         )
 
-    st.markdown(
+        st.markdown(
         "#### Representative Sample Cases"
     )
 
