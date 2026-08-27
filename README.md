@@ -31,7 +31,13 @@ The deployed Streamlit application allows users to upload a breast ultrasound im
 * Downloadable AI analysis report
 
 The application was designed to make the project understandable not only to people familiar with AI, but also to users who may be seeing concepts such as Grad-CAM++ for the first time.
+<p align="center">
+  <img src="images/app-preview.png" width="900">
+</p>
 
+<p align="center">
+  <em>AI-Assisted Breast Ultrasound Analysis — Streamlit application.</em>
+</p>
 ---
 
 # Introduction
