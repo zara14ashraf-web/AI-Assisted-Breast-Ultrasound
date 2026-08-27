@@ -516,6 +516,7 @@ The report includes:
 # 🧭 Understanding the Results
 
 The application also includes simple explanations for users unfamiliar with AI terminology.
+![AI Assessment](images/ai-assessment.png)
 
 It explains concepts such as:
 
