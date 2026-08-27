@@ -373,6 +373,7 @@ This provides an additional perspective on model performance when multiple views
 A central part of this project was the following question:
 
 > **The model made a prediction—but where was it looking?**
+![Grad-CAM++ Explainability](images/gradcam-analysis.png)
 
 To investigate this, the project uses **Grad-CAM++**.
 
