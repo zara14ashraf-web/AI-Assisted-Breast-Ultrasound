@@ -5,6 +5,7 @@ import streamlit as st
 import torch
 import torch.nn.functional as F
 
+from huggingface_hub import hf_hub_download
 from PIL import Image
 from torchvision import transforms
 
@@ -70,10 +71,10 @@ SAMPLES_DIR = os.path.join(
     "samples",
 )
 
-# Today's single EfficientNet-B3 checkpoint
-CHECKPOINT_PATH = os.path.join(
-    BASE_DIR,
-    "Model_Best.pth",
+# Final EfficientNet-B3 checkpoint hosted on Hugging Face
+CHECKPOINT_PATH = hf_hub_download(
+    repo_id="zara14ashraf/busbra-dual-effnet-b3-final",
+    filename="Model_Best.pth",
 )
 
 
