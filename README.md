@@ -10,8 +10,9 @@ An independent medical imaging AI project exploring whether deep learning can cl
 
 ## 🚀 Try the Live App | 📊 View Results | 🔬 Explainability Analysis
 
-🌐 **Live Streamlit Application** · 🤗 **Trained Model** · 💻 **Source Code**
-
+🌐 **[Live Streamlit Application](YOUR_STREAMLIT_LINK)** · 
+🤗 **[Trained Model](YOUR_HUGGINGFACE_LINK)** · 
+💻 **[Source Code](YOUR_GITHUB_LINK)**
 > **Note:** The deployed model is intended for research and educational purposes only. It is not a clinical diagnostic system and must not be used independently for diagnosis or treatment decisions.
 
 ---
