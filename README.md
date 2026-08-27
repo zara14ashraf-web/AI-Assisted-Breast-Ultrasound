@@ -10,9 +10,9 @@ An independent medical imaging AI project exploring whether deep learning can cl
 
 ## 🚀 Try the Live App | 📊 View Results | 🔬 Explainability Analysis
 
-🌐 **[Live Streamlit Application](YOUR_STREAMLIT_LINK)** · 
-🤗 **[Trained Model](YOUR_HUGGINGFACE_LINK)** · 
-💻 **[Source Code](YOUR_GITHUB_LINK)**
+🌐 **[Live Streamlit Application](https://ai-assisted-breast-ultrasound-3mupqtp6ehvq6jrkwsjst8.streamlit.app/)** · 
+🤗 **[Trained Model](https://huggingface.co/zara14ashraf/busbra-dual-effnet-b3-final)** · 
+💻 **[Source Code](https://github.com/zara14ashraf-web/AI-Assisted-Breast-Ultrasound)**
 > **Note:** The deployed model is intended for research and educational purposes only. It is not a clinical diagnostic system and must not be used independently for diagnosis or treatment decisions.
 
 ---
